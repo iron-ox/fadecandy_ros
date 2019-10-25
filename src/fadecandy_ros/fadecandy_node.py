@@ -12,6 +12,7 @@ class FadecandyNode:
             except IOError:
                 rospy.logwarn('Failed to connect to Fadecandy device; will retry every second')
             else:
+                rospy.loginfo('Connected to Fadecandy device')
                 break
             connection_retry_rate.sleep()
 

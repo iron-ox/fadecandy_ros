@@ -2,7 +2,6 @@
 import rospy
 from std_msgs.msg import ColorRGBA
 
-
 from fadecandy_ros.msg import LEDArray, LEDStrip
 
 
@@ -11,21 +10,31 @@ def main():
 
     led_array_pub = rospy.Publisher('set_leds', LEDArray, queue_size=1)
 
+    colors = [
+            ColorRGBA(255, 255, 255, 255),
+            ColorRGBA(255, 0, 0, 255),
+            ColorRGBA(0, 255, 0, 255),
+            ColorRGBA(0, 0, 255, 0)]
+
     bar_start = 0
     bar_length = 3
     num_leds = 21
+    color_i = 0
     while not rospy.is_shutdown():
         led_array = LEDArray()
 
         for led_strip in range(8):
             led_strip = LEDStrip()
             led_strip.colors = [ColorRGBA(0, 0, 0, 255)] * num_leds
-            led_strip.colors[bar_start] = ColorRGBA(255, 255, 255, 255)
+            for bar_offset in range(bar_length):
+                led_strip.colors[(bar_start + bar_offset) % num_leds] = colors[color_i]
             led_array.strips.append(led_strip)
 
         led_array_pub.publish(led_array)
 
-        bar_start = (bar_start + 1) % 10
+        bar_start = (bar_start + 1) % num_leds
+        if bar_start == 0:
+            color_i = (color_i + 1) % len(colors)
         rospy.sleep(0.1)
 
 if __name__ == '__main__':
