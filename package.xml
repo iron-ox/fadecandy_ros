@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>fadecandy_ros</name>
+  <version>0.0.0</version>
+  <description>ROS driver for fadecandy LED controllers</description>
+
+  <maintainer email="jon.binney@ironox.com">Jon Binney</maintainer>
+
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>std_msgs</depend>
+
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+
+  <build_depend>message_generation</build_depend>
+
+  <build_export_depend>message_runtime</build_export_depend>
+</package>
