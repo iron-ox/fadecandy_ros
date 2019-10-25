@@ -109,7 +109,6 @@ def make_default_lookup_table():
     lookup_values =  [min(0xFFFF, int(pow(row / 256.0, 2.2) * 0x10000)) for row in range(257)]
     return lookup_values, lookup_values, lookup_values
 
-
 class FadecandyDriver:
     def __init__(self):
         # Find usb device.
@@ -118,8 +117,11 @@ class FadecandyDriver:
             raise IOError('No Fadecandy interfaces found')
 
         # Connect to device.
-        self._device.set_configuration()
-        self.serial_number = usb.util.get_string(self._device, self._device.iSerialNumber)
+        try:
+            self._device.set_configuration()
+            self.serial_number = usb.util.get_string(self._device, self._device.iSerialNumber)
+        except usb.core.USBError as e:
+            raise IOError('Found Fadecandy device but could not connect')
 
         # Set configuration flags.
         flags = 0x00

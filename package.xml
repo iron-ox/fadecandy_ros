@@ -12,8 +12,9 @@
 
   <depend>std_msgs</depend>
 
-  <exec_depend>rospy</exec_depend>
   <exec_depend>message_runtime</exec_depend>
+  <exec_depend>python-usb</exec_depend>
+  <exec_depend>rospy</exec_depend>
 
   <build_depend>message_generation</build_depend>
 
