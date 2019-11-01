@@ -16,6 +16,7 @@ def main():
             ColorRGBA(0, 255, 0, 255),
             ColorRGBA(0, 0, 255, 0)]
 
+    num_led_strips = 8
     bar_start = 0
     bar_length = 3
     num_leds = 21
@@ -23,7 +24,7 @@ def main():
     while not rospy.is_shutdown():
         led_array = LEDArray()
 
-        for led_strip in range(8):
+        for led_strip in range(num_led_strips):
             led_strip = LEDStrip()
             led_strip.colors = [ColorRGBA(0, 0, 0, 255)] * num_leds
             for bar_offset in range(bar_length):
