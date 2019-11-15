@@ -15,4 +15,3 @@ install(PROGRAMS
   scripts/fadecandy_node
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-
