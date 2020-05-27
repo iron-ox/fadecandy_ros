@@ -32,7 +32,7 @@ class FadecandyNode:
     def _set_leds(self, led_array_msg):
         led_array_colors = []
         for led_strip_msg in led_array_msg.strips:
-            led_strip_colors = [(c.r, c.g, c.b) for c in led_strip_msg.colors]
+            led_strip_colors = [(c.r * 255, c.g * 255, c.b * 255) for c in led_strip_msg.colors]
             led_array_colors.append(led_strip_colors)
 
         # Convert to a list of r, g, b tuples and pass to the driver.

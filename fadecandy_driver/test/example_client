@@ -10,11 +10,7 @@ def main():
 
     led_array_pub = rospy.Publisher('set_leds', LEDArray, queue_size=1)
 
-    colors = [
-        ColorRGBA(255, 255, 255, 255),
-        ColorRGBA(255, 0, 0, 255),
-        ColorRGBA(0, 255, 0, 255),
-        ColorRGBA(0, 0, 255, 0)]
+    colors = [ColorRGBA(r=1, g=1, b=1), ColorRGBA(r=1), ColorRGBA(g=1), ColorRGBA(b=1)]
 
     num_led_strips = 8
     bar_start = 0
@@ -26,7 +22,7 @@ def main():
 
         for led_strip in range(num_led_strips):
             led_strip = LEDStrip()
-            led_strip.colors = [ColorRGBA(0, 0, 0, 255)] * num_leds
+            led_strip.colors = [ColorRGBA()] * num_leds
             for bar_offset in range(bar_length):
                 led_strip.colors[(bar_start + bar_offset) % num_leds] = colors[color_i]
             led_array.strips.append(led_strip)
