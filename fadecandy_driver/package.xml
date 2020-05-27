@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>fadecandy_ros</name>
+  <name>fadecandy_driver</name>
   <version>0.0.0</version>
   <description>ROS driver for fadecandy LED controllers</description>
 
@@ -10,13 +10,8 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>std_msgs</depend>
-
-  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>diagnostic_updater</exec_depend>
+  <exec_depend>fadecandy_msgs</exec_depend>
   <exec_depend>python-usb</exec_depend>
   <exec_depend>rospy</exec_depend>
-
-  <build_depend>message_generation</build_depend>
-
-  <build_export_depend>message_runtime</build_export_depend>
 </package>

@@ -22,6 +22,7 @@ NUM_STRIPS = 8
 VIDEO_PACKET_STRUCT = struct.Struct('B' + 'B' * 3 * LEDS_PER_PACKET)
 LOOKUP_TABLE_PACKET_STRUCT = struct.Struct('BB' + 'H' * LOOKUP_VALUES_PER_PACKET)
 
+
 def make_video_usb_packets(led_array_colors):
     """
     Construct the USB packets to set all LED strips to the given colors.
@@ -37,7 +38,7 @@ def make_video_usb_packets(led_array_colors):
         for led_i, led_color in enumerate(led_strip_colors):
             led_index = led_strip_i * LEDS_PER_STRIP + led_i
             all_led_colors[led_index] = led_color
-    assert(len(all_led_colors) == LEDS_PER_STRIP * NUM_STRIPS)
+    assert (len(all_led_colors) == LEDS_PER_STRIP * NUM_STRIPS)
 
     packets = []
     remaining_leds = all_led_colors
@@ -61,9 +62,10 @@ def make_video_usb_packets(led_array_colors):
         color_bytes.extend([0] * (63 - len(color_bytes)))
 
         packet = VIDEO_PACKET_STRUCT.pack(control, *color_bytes)
-        assert(len(packet) == USB_PACKET_SIZE)
+        assert (len(packet) == USB_PACKET_SIZE)
         packets.append(packet)
     return packets
+
 
 def make_lookup_table_packets(red_lookup_values, green_lookup_values, blue_lookup_values):
     """
@@ -72,9 +74,9 @@ def make_lookup_table_packets(red_lookup_values, green_lookup_values, blue_looku
     The entire red lookup table comes first, then the entire green channel, then the entire red
     channel.
     """
-    assert(len(red_lookup_values) == LOOKUP_VALUES_PER_CHANNEL)
-    assert(len(green_lookup_values) == LOOKUP_VALUES_PER_CHANNEL)
-    assert(len(blue_lookup_values) == LOOKUP_VALUES_PER_CHANNEL)
+    assert (len(red_lookup_values) == LOOKUP_VALUES_PER_CHANNEL)
+    assert (len(green_lookup_values) == LOOKUP_VALUES_PER_CHANNEL)
+    assert (len(blue_lookup_values) == LOOKUP_VALUES_PER_CHANNEL)
     remaining_lookup_values = red_lookup_values + green_lookup_values + blue_lookup_values
     packets = []
     while len(remaining_lookup_values) > 0:
@@ -93,9 +95,10 @@ def make_lookup_table_packets(red_lookup_values, green_lookup_values, blue_looku
         packet_lookup_values.extend([0] * (LOOKUP_VALUES_PER_PACKET - len(packet_lookup_values)))
 
         packet = LOOKUP_TABLE_PACKET_STRUCT.pack(control, 0, *packet_lookup_values)
-        assert(len(packet) == USB_PACKET_SIZE)
+        assert (len(packet) == USB_PACKET_SIZE)
         packets.append(packet)
     return packets
+
 
 def make_default_lookup_table():
     """
@@ -106,8 +109,9 @@ def make_default_lookup_table():
     #
     #  https://github.com/scanlime/fadecandy/blob/master/examples/python/usb-lowlevel.py
     #
-    lookup_values =  [min(0xFFFF, int(pow(row / 256.0, 2.2) * 0x10000)) for row in range(257)]
+    lookup_values = [min(0xFFFF, int(pow(row / 256.0, 2.2) * 0x10000)) for row in range(257)]
     return lookup_values, lookup_values, lookup_values
+
 
 class FadecandyDriver:
     def __init__(self):
@@ -130,13 +134,11 @@ class FadecandyDriver:
         # Setup basic color lookup table.
         red_lookup_values, green_lookup_values, blue_lookup_values = make_default_lookup_table()
         lookup_table_packets = make_lookup_table_packets(red_lookup_values, green_lookup_values,
-                blue_lookup_values)
+                                                         blue_lookup_values)
         for packet in lookup_table_packets:
             self._device.write(USB_ENDPOINT, packet)
 
-    def setColors(self, led_colors):
+    def set_colors(self, led_colors):
         usb_packets = make_video_usb_packets(led_colors)
         for packet in usb_packets:
             self._device.write(1, packet)
-
-
