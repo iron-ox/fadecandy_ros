@@ -7,7 +7,8 @@ catkin_python_setup()
 
 catkin_package()
 
-install(PROGRAMS
-  scripts/fadecandy_node
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+catkin_install_python(
+    PROGRAMS
+    scripts/fadecandy_node
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+    )
