@@ -2,8 +2,8 @@
 Changelog for package fadecandy_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.1 (2020-06-03)
+------------------
 * Merge pull request `#7 <https://github.com/iron-ox/fadecandy_ros/issues/7>`_ from jonbinney/python3-fixes
   Fixes for python3/noetic compatibility
 * Contributors: Jon Binney
