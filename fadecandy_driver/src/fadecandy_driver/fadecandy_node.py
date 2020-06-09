@@ -17,6 +17,8 @@ class FadecandyNode:
                 rospy.loginfo('Connected to Fadecandy device')
                 break
             connection_retry_rate.sleep()
+        else:
+            return
 
         self._set_leds_sub = rospy.Subscriber('set_leds', LEDArray, self._set_leds)
 
