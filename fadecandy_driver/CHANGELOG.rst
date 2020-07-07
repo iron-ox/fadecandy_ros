@@ -2,8 +2,8 @@
 Changelog for package fadecandy_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.2 (2020-07-06)
+------------------
 * Merge pull request `#10 <https://github.com/iron-ox/fadecandy_ros/issues/10>`_ from eurogroep/chore/log-io-error
   chore: log IO error
 * Merge pull request `#9 <https://github.com/iron-ox/fadecandy_ros/issues/9>`_ from eurogroep/fix/rospy-shutdown
