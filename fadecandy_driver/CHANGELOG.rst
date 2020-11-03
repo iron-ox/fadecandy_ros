@@ -2,6 +2,11 @@
 Changelog for package fadecandy_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+------------------
+* Merge pull request `#13 <https://github.com/iron-ox/fadecandy_ros/issues/13>`_ from eurogroep/fix/noetic-python3-struct-pack: fix(Noetic/Python3): Struct packing
+* Contributors: Rein Appeldoorn
+
 0.1.2 (2020-07-06)
 ------------------
 * Merge pull request `#10 <https://github.com/iron-ox/fadecandy_ros/issues/10>`_ from eurogroep/chore/log-io-error
