@@ -10,10 +10,10 @@ class FadecandyNode:
         self._driver = None
         self._diagnostic_updater = diagnostic_updater.Updater()
         self._diagnostic_updater.add("Info", self._info_diagnostics)
+        self._diagnostic_timer = rospy.Timer(rospy.Duration(1), lambda e: self._diagnostic_updater.force_update())
 
         self._connect()
         self._set_leds_sub = rospy.Subscriber('set_leds', LEDArray, self._set_leds)
-        self._diagnostic_timer = rospy.Timer(rospy.Duration(1), lambda e: self._diagnostic_updater.force_update())
 
     def _connect(self):
         if self._driver is not None:
