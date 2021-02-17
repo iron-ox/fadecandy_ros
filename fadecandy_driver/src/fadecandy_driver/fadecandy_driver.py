@@ -142,3 +142,6 @@ class FadecandyDriver:
         usb_packets = make_video_usb_packets(led_colors)
         for packet in usb_packets:
             self._device.write(1, packet)
+
+    def release(self):
+        usb.util.dispose_resources(self._device)
