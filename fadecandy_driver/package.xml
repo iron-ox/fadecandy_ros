@@ -10,9 +10,10 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <build_depend>auto_lint</build_depend>
+  <build_depend>auto_lint</build_depend>
   <exec_depend>diagnostic_updater</exec_depend>
-  <exec_depend>fadecandy_msgs</exec_depend>
-  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-usb</exec_depend>
-  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-usb</exec_depend>
-  <exec_depend>rospy</exec_depend>
+  <depend>roscpp</depend>
+  <depend>fadecandy_msgs</depend>
+  <depend>libusb</depend>
 </package>
