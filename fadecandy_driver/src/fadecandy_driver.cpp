@@ -5,7 +5,6 @@
 #include <list>
 #include <math.h>
 #include <vector>
-
 #define BITS 8
 #include <cstring>
 #include <iomanip>
@@ -201,6 +200,7 @@ void FadecandyDriver::set_colors(std::vector<std::vector<colors>> led_colors) {
     } else {
       std::cout << "||" << r << "||" << actual_written << "||"
                 << "Could not write.";
+      throw std::runtime_error("Could not write.");
     }
   }
 }
@@ -261,6 +261,7 @@ void FadecandyDriver::intialize() {
                              &actual_written, 10000);
     if (r == 0 && actual_written == 64) {
       std::cout << "Succesfully written!";
+
     } else {
       std::cout << "||" << r << "||" << actual_written << "||"
                 << "Could not write.";
