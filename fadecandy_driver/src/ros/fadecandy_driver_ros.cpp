@@ -9,52 +9,27 @@ FadecandyDriverRos::FadecandyDriverRos() {
                           &FadecandyDriverRos::diagnosticsCallback);
   led_subscriber = nh.subscribe<fadecandy_msgs::LEDArray>(
       "/set_leds", 1, &FadecandyDriverRos::setLedsCallback, this);
-  FadecandyDriverRos::intialize();
+  //  FadecandyDriverRos::intialize();
+  initialized = false;
 }
 
 void FadecandyDriverRos::connect() {
-  ROS_INFO("Connecting to Fadecandy device ..");
-  FadecandyDriver::release();
-  FadecandyDriverRos::intialize();
-  if (FadecandyDriver::fadecandy_device == NULL) {
-    FadecandyDriver::release();
-    FadecandyDriverRos::intialize();
-  }
-  ROS_INFO("Connecting to Fadecandy device ..");
 
-  bool exception_caught = true;
-  double connection_retry_rate = 1.0;
   ROS_INFO("Connecting to Fadecandy device ..");
   while (ros::ok()) {
-    ros::spin();
-    try {
-      ROS_INFO("Connected to Fadecandy device");
-      exception_caught = false;
-    } catch (const std::exception &e) {
-      ROS_ERROR("Exception: %s", e.what());
-      ROS_INFO("Restarting driver in %.2f seconds ..", connection_retry_rate);
-      ros::Duration(connection_retry_rate).sleep();
+
+    if (!initialized) {
+      initialized = FadecandyDriverRos::intialize();
+      std::cout << " connecting" << std::endl;
+    } else {
+      ros::spin();
     }
-    if (!exception_caught) {
-      ROS_INFO("Connected to Fadecandy device ..");
-      break;
-      //      unsigned char string[256];
-      //      libusb_get_string_descriptor_ascii(
-      //          dev_handle,
-      //      fadecandy_device_descriptor.iSerialNumber,
-      //      string,
-      //      //          sizeof(string));
-      //      //      std::string *s = (std::string *)string;
-      //      //      diagnostic_updater_.setHardwareID(*s);
-    }
+    ros::Duration(1).sleep();
   }
 }
 
 void FadecandyDriverRos::setLedsCallback(
     const fadecandy_msgs::LEDArrayConstPtr &led_array_msg) {
-  ROS_INFO("Call back ..");
-  if (FadecandyDriver::fadecandy_device == NULL)
-    return;
   std::vector<std::vector<colors>> led_array_colors;
   std::vector<colors> led_strip_colors;
   for (size_t i = 0; i < led_array_msg->strips.size(); ++i) {
@@ -68,9 +43,12 @@ void FadecandyDriverRos::setLedsCallback(
   }
   //  FadecandyDriver::set_colors(led_array_colors);
   try {
+    ROS_INFO("Setting colors ..");
+
     FadecandyDriver::set_colors(led_array_colors);
   } catch (const std::exception &e) {
     ROS_ERROR("Exception: %s", e.what());
+    initialized = false;
     FadecandyDriverRos::connect();
   }
 };

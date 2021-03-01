@@ -32,7 +32,7 @@ void FadecandyDriver::findUsb() {
 
   count = libusb_get_device_list(context, &list);
   assert(count > 0);
-
+  std::cout << count << std::endl;
   for (size_t idx = 0; idx < count; ++idx) {
     libusb_device *device = list[idx];
     libusb_device_descriptor desc = {0};
@@ -195,13 +195,8 @@ void FadecandyDriver::set_colors(std::vector<std::vector<colors>> led_colors) {
   for (size_t i = 0; i < usb_packets.size(); i++) {
     r = libusb_bulk_transfer(dev_handle, USB_ENDPOINT, usb_packets[i].data(),
                              64, &actual_written, 10000);
-    if (r == 0 && actual_written == 64) {
-      std::cout << "Succesfully written!";
-    } else {
-      std::cout << "||" << r << "||" << actual_written << "||"
-                << "Could not write.";
-      throw std::runtime_error("Could not write.");
-    }
+    if (r != 0 || actual_written != 64)
+      throw std::runtime_error("Could not write on the driver.");
   }
 }
 
@@ -217,16 +212,17 @@ void FadecandyDriver::release() {
   libusb_close(dev_handle);
   libusb_exit(context);
 }
-void FadecandyDriver::intialize() {
+bool FadecandyDriver::intialize() {
   // Find usb device.
   findUsb();
   if (!fadecandy_device) {
     printf("No Fadecandy interfaces found");
-    throw;
+    return false;
   }
   uint r = libusb_init(&context);
   if (r < 0) {
     printf("Error");
+    return false;
   }
   //  libusb_set_debug(context, 4);
   dev_handle =
@@ -234,6 +230,7 @@ void FadecandyDriver::intialize() {
 
   if (dev_handle == NULL) {
     printf("Could not open device.");
+    return false;
   }
 
   // Check if kernel driver, detach
@@ -243,10 +240,16 @@ void FadecandyDriver::intialize() {
       std::cout << "Kernel Driver Detached";
     }
   }
+  //  libusb_set_configuration(dev_handle, 1);
+  //  if (libusb_set_configuration(dev_handle, 1) < 0) {
+
+  //    fprintf(stderr, "usb_set_configuration() failed\n");
+  //  }
   // Claim interface
   r = libusb_claim_interface(dev_handle, INTERFACE_NO);
   if (r < 0) {
     std::cout << "Could not claim interface.";
+    return false;
   }
   printf("Interface claimed.");
   // Prepare command
@@ -259,13 +262,12 @@ void FadecandyDriver::intialize() {
   for (size_t i = 0; i < packets.size(); i++) {
     r = libusb_bulk_transfer(dev_handle, USB_ENDPOINT, packets[i].data(), 64,
                              &actual_written, 10000);
-    if (r == 0 && actual_written == 64) {
-      std::cout << "Succesfully written!";
-
-    } else {
-      std::cout << "||" << r << "||" << actual_written << "||"
-                << "Could not write.";
+    if (r != 0 && actual_written != 64) {
+      printf("writting failed !.");
+      return false;
     }
   }
+  std::cout << "writting succeedded !." << std::endl;
+  return true;
 }
 } // namespace fadecandy_driver

@@ -45,7 +45,7 @@ public:
                             std::vector<int> blue_lookup_values);
   std::vector<int> make_default_lookup_table();
   void set_colors(std::vector<std::vector<colors>> led_colors);
-  void intialize();
+  bool intialize();
 };
 
 } // namespace fadecandy_driver

@@ -18,6 +18,7 @@ public:
   void connect();
 
 private:
+  bool initialized;
   //!
   //! \brief setLedsCallback Fired when a new BatteryState is received
   //! \param state State
