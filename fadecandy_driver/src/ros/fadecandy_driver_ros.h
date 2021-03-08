@@ -20,8 +20,7 @@ public:
 private:
   bool initialized;
   //!
-  //! \brief setLedsCallback Fired when a new BatteryState is received
-  //! \param state State
+  //! \brief setLedsCallback fired when a new LEDArray message is received
   //!
   void setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr &msg);
 
