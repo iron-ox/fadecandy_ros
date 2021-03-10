@@ -4,9 +4,10 @@
 #include <ros/publisher.h>
 #include <ros/subscriber.h>
 
-namespace fadecandy_driver {
-
-class FadecandyDriverRos : public FadecandyDriver {
+namespace fadecandy_driver
+{
+class FadecandyDriverRos : public FadecandyDriver
+{
   //!
   //! \brief The FadecandyDriverRos class wraps ROS
   //!
@@ -21,19 +22,18 @@ private:
   //!
   //! \brief setLedsCallback fired when a new LEDArray message is received
   //!
-  void setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr &msg);
+  void setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr& msg);
 
   //!
   //! \brief diagnosticsCallback Diagnostics callback
   //! \param diagnostic_status Status that should be updated
   //!
-  void diagnosticsCallback(
-      diagnostic_updater::DiagnosticStatusWrapper &diagnostic_status);
+  void diagnosticsCallback(diagnostic_updater::DiagnosticStatusWrapper& diagnostic_status);
   //!
   //! \brief timer_ Periodic timer
   //!
   ros::Timer timer_;
-  void timerCallback(const ros::TimerEvent &e);
+  void timerCallback(const ros::TimerEvent& e);
   //!
   //! \brief diagnostic_updater_ Diagnostic updater
   //!
@@ -42,4 +42,4 @@ private:
   ros::Subscriber led_subscriber;
 };
 
-} // namespace fadecandy_driver
+}  // namespace fadecandy_driver

@@ -20,25 +20,28 @@
 #define LEDS_PER_STRIP 64
 #define NUM_STRIPS 8
 
-namespace fadecandy_driver {
+namespace fadecandy_driver
+{
 //!
 //! \brief The FadecandyDriver class
 //!
-class FadecandyDriver {
+class FadecandyDriver
+{
 public:
   //!
   //! \brief The color struct contains the r,g and b colors
   //!
-  struct colors {
+  struct colors
+  {
     double r;
     double g;
     double b;
   };
-  libusb_device *fadecandy_device = NULL;
+  libusb_device* fadecandy_device = NULL;
   libusb_device_descriptor fadecandy_device_descriptor;
-  libusb_context *context = NULL;
-  libusb_device_handle *dev_handle = NULL;
-  char *serial_number = NULL;
+  libusb_context* context = NULL;
+  libusb_device_handle* dev_handle = NULL;
+  char* serial_number = NULL;
   //!
   //! \brief findUsbDevice search the fadcandy device with particular vendor and
   //! product id
@@ -71,8 +74,7 @@ private:
   //! less than the total number of LEDs in any given strip, all unspecified
   //! LEDs are left dark.
   //!
-  std::vector<std::vector<unsigned char>>
-      makeVideoUsbPackets(std::vector<std::vector<colors>>);
+  std::vector<std::vector<unsigned char>> makeVideoUsbPackets(std::vector<std::vector<colors>>);
 
   //!
   //! \brief makeLookupTablePackets creates USB packets for a simple color
@@ -80,10 +82,9 @@ private:
   //! green channel, then the entire red channel.
   //!
 
-  std::vector<std::vector<unsigned char>>
-  makeLookupTablePackets(std::vector<int> red_lookup_values,
-                         std::vector<int> green_lookup_values,
-                         std::vector<int> blue_lookup_values);
+  std::vector<std::vector<unsigned char>> makeLookupTablePackets(std::vector<int> red_lookup_values,
+                                                                 std::vector<int> green_lookup_values,
+                                                                 std::vector<int> blue_lookup_values);
 
   //!
   //! \brief makeLookupTablePackets returns lookup tables as 3 lists of lookup
@@ -94,4 +95,4 @@ private:
   std::vector<int> makeDefaultLookupTable();
 };
 
-} // namespace fadecandy_driver
+}  // namespace fadecandy_driver
