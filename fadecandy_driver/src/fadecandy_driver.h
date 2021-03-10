@@ -38,7 +38,7 @@ public:
   libusb_device_descriptor fadecandy_device_descriptor;
   libusb_context *context = NULL;
   libusb_device_handle *dev_handle = NULL;
-
+  char *serial_number = NULL;
   //!
   //! \brief findUsbDevice search the fadcandy device with particular vendor and
   //! product id

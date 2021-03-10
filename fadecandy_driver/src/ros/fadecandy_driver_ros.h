@@ -10,15 +10,14 @@ class FadecandyDriverRos : public FadecandyDriver {
   //!
   //! \brief The FadecandyDriverRos class wraps ROS
   //!
-  //! Publishes diagnostics
   //!
 public:
   FadecandyDriverRos();
   void spin();
   void connect();
+  bool initialized;
 
 private:
-  bool initialized;
   //!
   //! \brief setLedsCallback fired when a new LEDArray message is received
   //!
@@ -30,7 +29,11 @@ private:
   //!
   void diagnosticsCallback(
       diagnostic_updater::DiagnosticStatusWrapper &diagnostic_status);
-
+  //!
+  //! \brief timer_ Periodic timer
+  //!
+  ros::Timer timer_;
+  void timerCallback(const ros::TimerEvent &e);
   //!
   //! \brief diagnostic_updater_ Diagnostic updater
   //!

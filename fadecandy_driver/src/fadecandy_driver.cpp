@@ -260,6 +260,7 @@ bool FadecandyDriver::intialize() {
     //    printf("Could not claim interface.");
     return false;
   }
+
   // Prepare command
   int actual_written;
 
