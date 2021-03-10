@@ -44,11 +44,6 @@ add_executable(${PROJECT_NAME}_node src/ros/${PROJECT_NAME}_ros_node.cpp)
 target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME}_ros)
 
 #############
-##   Test  ##
-#############
-
-
-#############
 ## Install ##
 #############
 

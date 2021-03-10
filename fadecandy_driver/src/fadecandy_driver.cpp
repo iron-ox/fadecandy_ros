@@ -66,7 +66,6 @@ FadecandyDriver::makeVideoUsbPackets(std::vector<std::vector<Color>> led_array_c
       all_led_colors[led_index] = led_array_colors[i][j];
     }
   }
-  std::cout << all_led_colors[192].r << " " << all_led_colors[192].g << " " << all_led_colors[192].b << std::endl;
   assert(all_led_colors.size() == LEDS_PER_STRIP * NUM_STRIPS);
   std::vector<std::vector<unsigned char>> packets;
   std::vector<unsigned char> packet;

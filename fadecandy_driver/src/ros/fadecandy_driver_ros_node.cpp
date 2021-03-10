@@ -33,7 +33,6 @@ int main(int argc, char** argv)
       ros::Duration(restart_patience).sleep();
     }
     ros::spinOnce();
-    ros::Duration(.1).sleep();
   }
   return 0;
 }
