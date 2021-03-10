@@ -1,3 +1,7 @@
+//
+// Copyright (c) 2021 Eurotec
+//
+
 #include "../fadecandy_driver.h"
 #include <diagnostic_updater/diagnostic_updater.h>
 #include <fadecandy_msgs/LEDArray.h>
@@ -14,9 +18,8 @@ class FadecandyDriverRos : public FadecandyDriver
   //!
 public:
   FadecandyDriverRos();
-  void spin();
-  void connect();
-  bool initialized;
+  void run();
+  bool initialized_;
 
 private:
   //!
@@ -29,11 +32,13 @@ private:
   //! \param diagnostic_status Status that should be updated
   //!
   void diagnosticsCallback(diagnostic_updater::DiagnosticStatusWrapper& diagnostic_status);
+
   //!
   //! \brief timer_ Periodic timer
   //!
   ros::Timer timer_;
   void timerCallback(const ros::TimerEvent& e);
+
   //!
   //! \brief diagnostic_updater_ Diagnostic updater
   //!

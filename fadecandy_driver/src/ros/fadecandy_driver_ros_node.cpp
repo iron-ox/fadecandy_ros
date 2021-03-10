@@ -1,3 +1,7 @@
+//
+// Copyright (c) 2021 Eurotec
+//
+
 #include <ros/init.h>
 #include <ros/node_handle.h>
 
@@ -7,17 +11,18 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "fadecandy_driver");
   ros::NodeHandle local_nh("~");
-  fadecandy_driver::FadecandyDriverRos Node;
+  double restart_patience = local_nh.param("restart_patience", 1.);
 
-  double restart_patience = 1.;
+  fadecandy_driver::FadecandyDriverRos node;
+
   while (ros::ok())
   {
     try
     {
-      if (!Node.initialized)
+      if (!node.initialized_)
       {
         ROS_INFO("Connecting to Fadecandy device ..");
-        Node.connect();
+        node.run();
       }
     }
     catch (const std::exception& e)
@@ -28,7 +33,6 @@ int main(int argc, char** argv)
       ros::Duration(restart_patience).sleep();
     }
     ros::spinOnce();
-
     ros::Duration(.1).sleep();
   }
   return 0;

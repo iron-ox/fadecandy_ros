@@ -1,4 +1,7 @@
-#include "./fadecandy_driver.h"
+//
+// Copyright (c) 2021 Eurotec
+//
+
 #include <cassert>
 #include <cstring>
 #include <iomanip>
@@ -7,7 +10,10 @@
 #include <list>
 #include <math.h>
 #include <vector>
-#define BITS 8
+
+#include "./fadecandy_driver.h"
+
+constexpr int BITS = 8;
 
 namespace fadecandy_driver
 {
@@ -29,11 +35,9 @@ void FadecandyDriver::findUsbDevice()
   int rc = 0;
   unsigned count = 0;
 
-  rc = libusb_init(&context);
-  //  assert(rc == 0);
+  rc = libusb_init(&context_);
 
-  count = libusb_get_device_list(context, &list);
-  //  assert(count > 0);
+  count = libusb_get_device_list(context_, &list);
   for (size_t idx = 0; idx < count; ++idx)
   {
     libusb_device* device = list[idx];
@@ -43,19 +47,17 @@ void FadecandyDriver::findUsbDevice()
     assert(rc == 0);
     if (desc.idVendor == USB_VENDOR_ID && desc.idProduct == USB_PRODUCT_ID)
     {
-      fadecandy_device = device;
-      fadecandy_device_descriptor = desc;
-      //      printf("Vendor:Device = %04x:%04x\n", desc.idVendor,
-      //      desc.idProduct);
+      fadecandy_device_ = device;
+      fadecandy_device_descriptor_ = desc;
     }
   }
 }
 
 std::vector<std::vector<unsigned char>>
-FadecandyDriver::makeVideoUsbPackets(std::vector<std::vector<colors>> led_array_colors)
+FadecandyDriver::makeVideoUsbPackets(std::vector<std::vector<Color>> led_array_colors)
 {
   int led_index = 0;
-  std::vector<colors> all_led_colors(LEDS_PER_STRIP * NUM_STRIPS, { 0, 0, 0 });
+  std::vector<Color> all_led_colors(LEDS_PER_STRIP * NUM_STRIPS, { 0, 0, 0 });
   for (size_t i = 0; i < led_array_colors.size(); i++)
   {
     for (size_t j = 0; j < led_array_colors[i].size(); j++)
@@ -64,12 +66,12 @@ FadecandyDriver::makeVideoUsbPackets(std::vector<std::vector<colors>> led_array_
       all_led_colors[led_index] = led_array_colors[i][j];
     }
   }
-
+  std::cout << all_led_colors[192].r << " " << all_led_colors[192].g << " " << all_led_colors[192].b << std::endl;
   assert(all_led_colors.size() == LEDS_PER_STRIP * NUM_STRIPS);
   std::vector<std::vector<unsigned char>> packets;
   std::vector<unsigned char> packet;
-  std::vector<colors> packet_leds;
-  std::vector<colors> remaining_leds = all_led_colors;
+  std::vector<Color> packet_leds;
+  std::vector<Color> remaining_leds = all_led_colors;
   std::vector<int> color_bytes;
   int control;
 
@@ -178,10 +180,6 @@ std::vector<std::vector<unsigned char>> FadecandyDriver::makeLookupTablePackets(
       unsigned char buffer[byts_per_int];
       std::vector<unsigned char> bufferv;
       bufferv = intToCharArray(buffer, packet_lookup_values[i], byts_per_int);
-      //      for (auto &el : buffer) {
-      //        std::cout << std::hex << std::setw(2) << std::setfill('0')
-      //                  << static_cast<unsigned int>(el & 0xff) << " ";
-      //      };
       packet.insert(packet.end(), bufferv.begin(), bufferv.end());
     }
     // add control byte
@@ -200,22 +198,21 @@ std::vector<int> FadecandyDriver::makeDefaultLookupTable()
   for (int row = 0; row < 257; row++)
   {
     lookup_values.push_back(std::min(0xFFFF, int(pow(row / 256.0, 2.2) * 0x10000)));
-    //    std::cout << lookup_values.at(row) << " ";
   }
   return lookup_values;
 }
 
-void FadecandyDriver::setColors(std::vector<std::vector<colors>> led_colors)
+void FadecandyDriver::setColors(std::vector<std::vector<Color>> led_colors)
 {
-  if (fadecandy_device != NULL)
+  if (fadecandy_device_ != NULL)
   {
-    uint r = libusb_init(&context);
+    uint r = libusb_init(&context_);
     int actual_written;
 
     std::vector<std::vector<unsigned char>> usb_packets = FadecandyDriver::makeVideoUsbPackets(led_colors);
     for (size_t i = 0; i < usb_packets.size(); i++)
     {
-      r = libusb_bulk_transfer(dev_handle, USB_ENDPOINT, usb_packets[i].data(), 64, &actual_written, 10000);
+      r = libusb_bulk_transfer(dev_handle_, USB_ENDPOINT, usb_packets[i].data(), 64, &actual_written, 10000);
       if (r != 0 || actual_written != 64)
         throw std::runtime_error("Could not write on the driver.");
     }
@@ -229,57 +226,55 @@ void FadecandyDriver::setColors(std::vector<std::vector<colors>> led_colors)
 void FadecandyDriver::release()
 {
   // Releasing interface
-  uint r = libusb_init(&context);
-  r = libusb_release_interface(dev_handle, INTERFACE_NO);
+  uint r = libusb_init(&context_);
+  r = libusb_release_interface(dev_handle_, INTERFACE_NO);
   if (r < 0)
   {
-    //    printf("Could not release interface.");
+    throw std::runtime_error("Coudln't release device.");
   }
-
-  libusb_close(dev_handle);
-  libusb_exit(context);
+  libusb_close(dev_handle_);
+  libusb_exit(context_);
 }
 
 bool FadecandyDriver::intialize()
 {
   // Find usb device.
   findUsbDevice();
-  if (!fadecandy_device)
+  if (!fadecandy_device_)
   {
-    //    printf("No Fadecandy interfaces found");
     return false;
   }
-  uint r = libusb_init(&context);
+  uint r = libusb_init(&context_);
   if (r < 0)
   {
-    //    printf("Error in initialization");
     return false;
   }
-  dev_handle = libusb_open_device_with_vid_pid(context, USB_VENDOR_ID, USB_PRODUCT_ID);
+  dev_handle_ = libusb_open_device_with_vid_pid(context_, USB_VENDOR_ID, USB_PRODUCT_ID);
 
-  if (dev_handle == NULL)
+  if (dev_handle_ == NULL)
   {
-    //    printf("Could not open /*d*/evice.");
     return false;
   }
 
   // Check if kernel driver, detach
-  if (libusb_kernel_driver_active(dev_handle, INTERFACE_NO) == 1)
+  if (libusb_kernel_driver_active(dev_handle_, INTERFACE_NO) == 1)
   {
-    //    printf("Kernel Driver Active");
-    if (libusb_detach_kernel_driver(dev_handle, INTERFACE_NO) == 0)
+    if (libusb_detach_kernel_driver(dev_handle_, INTERFACE_NO) != 0)
     {
-      //      printf("Kernel Driver Detached");
+      return false;
     }
   }
 
   // Claim interface
-  r = libusb_claim_interface(dev_handle, INTERFACE_NO);
+  r = libusb_claim_interface(dev_handle_, INTERFACE_NO);
   if (r < 0)
   {
-    //    printf("Could not claim interface.");
     return false;
   }
+
+  unsigned char serial[64];
+  libusb_get_string_descriptor_ascii(dev_handle_, fadecandy_device_descriptor_.iSerialNumber, serial, 64);
+  serial_number_ = reinterpret_cast<char*>(serial);
 
   // Prepare command
   int actual_written;
@@ -289,10 +284,9 @@ bool FadecandyDriver::intialize()
 
   for (size_t i = 0; i < packets.size(); i++)
   {
-    r = libusb_bulk_transfer(dev_handle, USB_ENDPOINT, packets[i].data(), 64, &actual_written, 10000);
+    r = libusb_bulk_transfer(dev_handle_, USB_ENDPOINT, packets[i].data(), 64, &actual_written, 10000);
     if (r != 0 && actual_written != 64)
     {
-      //      printf("writting failed !.");
       return false;
     }
   }

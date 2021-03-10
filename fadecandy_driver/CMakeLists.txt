@@ -10,16 +10,16 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 ##################
 
 find_package(catkin REQUIRED COMPONENTS
-  auto_lint
-  roscpp
+  diagnostic_updater
   fadecandy_msgs
+  roscpp
 )
 
 catkin_package(
   CATKIN_DEPENDS
-    roscpp
+    diagnostic_updater
     fadecandy_msgs
-  LIBRARIES ${PROJECT_NAME}
+    roscpp
 )
 
 ##############
@@ -33,12 +33,12 @@ include_directories(
 add_library(${PROJECT_NAME}
   src/${PROJECT_NAME}.cpp
 )
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} usb-1.0)
 
 add_library(${PROJECT_NAME}_ros
   src/ros/${PROJECT_NAME}_ros.cpp
 )
-target_link_libraries(${PROJECT_NAME}_ros ${PROJECT_NAME} usb-1.0)
+target_link_libraries(${PROJECT_NAME}_ros ${PROJECT_NAME} )
 
 add_executable(${PROJECT_NAME}_node src/ros/${PROJECT_NAME}_ros_node.cpp)
 target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME}_ros)
@@ -47,9 +47,6 @@ target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME}_ros)
 ##   Test  ##
 #############
 
-if (CATKIN_ENABLE_TESTING)
-  auto_lint_add_tests()
-endif()
 
 #############
 ## Install ##
@@ -60,7 +57,6 @@ install(
     ${PROJECT_NAME}
     ${PROJECT_NAME}_node
     ${PROJECT_NAME}_ros
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

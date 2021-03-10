@@ -10,10 +10,8 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>auto_lint</build_depend>
-  <build_depend>auto_lint</build_depend>
-  <exec_depend>diagnostic_updater</exec_depend>
-  <depend>roscpp</depend>
+  <depend>diagnostic_updater</depend>
   <depend>fadecandy_msgs</depend>
   <depend>libusb</depend>
+  <depend>roscpp</depend>
 </package>

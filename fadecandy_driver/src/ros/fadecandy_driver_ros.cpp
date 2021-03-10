@@ -1,3 +1,7 @@
+//
+// Copyright (c) 2021 Eurotec
+//
+
 #include "./fadecandy_driver_ros.h"
 #include <fadecandy_msgs/LEDArray.h>
 
@@ -12,26 +16,25 @@ FadecandyDriverRos::FadecandyDriverRos()
   diagnostic_updater_.add("Info", this, &FadecandyDriverRos::diagnosticsCallback);
 
   led_subscriber = nh.subscribe<fadecandy_msgs::LEDArray>("/set_leds", 1, &FadecandyDriverRos::setLedsCallback, this);
-  initialized = false;
+  initialized_ = false;
 }
 
-void FadecandyDriverRos::connect()
+void FadecandyDriverRos::run()
 {
-  if (fadecandy_device != NULL)
+  if (fadecandy_device_ != NULL)
   {
     release();
-    fadecandy_device = NULL;
+    fadecandy_device_ = NULL;
   }
 
-  if (!initialized)
+  if (!initialized_)
   {
-    initialized = FadecandyDriverRos::intialize();
-    if (initialized)
+    initialized_ = FadecandyDriverRos::intialize();
+    if (initialized_)
     {
       ROS_INFO("Connected to Fadecandy device");
-      unsigned char serial_number[64];
-      libusb_get_string_descriptor_ascii(dev_handle, fadecandy_device_descriptor.iSerialNumber, serial_number, 64);
-      diagnostic_updater_.setHardwareID((char*)serial_number);
+
+      diagnostic_updater_.setHardwareID(serial_number_);
     }
     else
     {
@@ -42,8 +45,8 @@ void FadecandyDriverRos::connect()
 
 void FadecandyDriverRos::setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr& led_array_msg)
 {
-  std::vector<std::vector<colors>> led_array_colors;
-  std::vector<colors> led_strip_colors;
+  std::vector<std::vector<Color>> led_array_colors;
+  std::vector<Color> led_strip_colors;
   for (size_t i = 0; i < led_array_msg->strips.size(); ++i)
   {
     led_strip_colors.clear();
@@ -61,13 +64,13 @@ void FadecandyDriverRos::setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr&
   }
   catch (const std::exception& e)
   {
-    initialized = false;
+    initialized_ = false;
     return;
   }
 };
 void FadecandyDriverRos::diagnosticsCallback(diagnostic_updater::DiagnosticStatusWrapper& diagnostic_status)
 {
-  if (FadecandyDriver::fadecandy_device != NULL)
+  if (FadecandyDriver::fadecandy_device_ != NULL)
   {
     diagnostic_status.summary(diagnostic_msgs::DiagnosticStatus::OK, "Connected");
   }
