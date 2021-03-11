@@ -2,6 +2,7 @@
 // Copyright (c) 2021 Eurotec
 //
 
+#include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <iomanip>
@@ -26,6 +27,7 @@ std::vector<unsigned char> intToCharArray(unsigned char* buffer, int in, const s
     buffer[i] = (in >> shift) & 0xff;
     char_array.push_back(buffer[i]);
   }
+  std::reverse(char_array.begin(), char_array.end());
   return char_array;
 }
 
