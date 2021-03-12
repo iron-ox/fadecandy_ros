@@ -40,24 +40,29 @@ public:
     double g;
     double b;
   };
+
   libusb_device* fadecandy_device_ = NULL;
   libusb_device_descriptor fadecandy_device_descriptor_;
   libusb_context* context_ = NULL;
   libusb_device_handle* dev_handle_ = NULL;
   std::string serial_number_;
+
   //!
   //! \brief findUsbDevice search the fadcandy device with particular vendor and
   //! product id
   //!
   void findUsbDevice();
+
   //!
   //! \brief release fadecandy device interface
   //!
   void release();
+
   //!
   //! \brief initialize fadecandy device interface
   //!
   bool intialize();
+
   //!
   //! \brief initialize fadecandy device interface
   //!

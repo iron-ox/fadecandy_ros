@@ -10,20 +10,27 @@
 
 namespace fadecandy_driver
 {
+//!
+//! \brief The FadecandyDriverRos class wraps ROS
+//!
 class FadecandyDriverRos : public FadecandyDriver
 {
-  //!
-  //! \brief The FadecandyDriverRos class wraps ROS
-  //!
-  //!
 public:
+  //!
+  //! \brief FadecandyDriverRos fadecandy driver ROS wrapper
+  //!
   FadecandyDriverRos();
+
+  //!
+  //! \brief run Construct the connection with the driver
+  //!
   void run();
+
   bool initialized_;
 
 private:
   //!
-  //! \brief setLedsCallback fired when a new LEDArray message is received
+  //! \brief setLedsCallback Fired when a new LEDArray message is received
   //!
   void setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr& msg);
 
@@ -44,7 +51,10 @@ private:
   //!
   diagnostic_updater::Updater diagnostic_updater_;
 
-  ros::Subscriber led_subscriber;
+  //!
+  //! \brief led_subscriber_ LED messages subscriber
+  //!
+  ros::Subscriber led_subscriber_;
 };
 
 }  // namespace fadecandy_driver

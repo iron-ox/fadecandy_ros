@@ -94,7 +94,9 @@ FadecandyDriver::makeVideoUsbPackets(std::vector<std::vector<Color>> led_array_c
 
     control = packets.size() | PACKET_TYPE_VIDEO;
     if (remaining_leds.size() == 0)
+    {
       control |= FINAL_PACKET_BIT;
+    }
 
     for (size_t i = 0; i < packet_leds.size(); i++)
     {
@@ -164,7 +166,9 @@ std::vector<std::vector<unsigned char>> FadecandyDriver::makeLookupTablePackets(
     }
     control = packets.size() | PACKET_TYPE_LUT;
     if (remaining_lookup_values.size() == 0)
+    {
       control |= FINAL_PACKET_BIT;
+    }
 
     if (LOOKUP_VALUES_PER_PACKET - packet_lookup_values.size() > 0)
     {
@@ -215,7 +219,9 @@ void FadecandyDriver::setColors(std::vector<std::vector<Color>> led_colors)
     {
       r = libusb_bulk_transfer(dev_handle_, USB_ENDPOINT, usb_packets[i].data(), 64, &actual_written, 10000);
       if (r != 0 || actual_written != 64)
+      {
         throw std::runtime_error("Could not write on the driver.");
+      }
     }
   }
   else

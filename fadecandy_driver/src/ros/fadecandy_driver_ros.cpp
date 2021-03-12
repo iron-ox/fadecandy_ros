@@ -15,7 +15,7 @@ FadecandyDriverRos::FadecandyDriverRos()
 
   diagnostic_updater_.add("Info", this, &FadecandyDriverRos::diagnosticsCallback);
 
-  led_subscriber = nh.subscribe<fadecandy_msgs::LEDArray>("/set_leds", 1, &FadecandyDriverRos::setLedsCallback, this);
+  led_subscriber_ = nh.subscribe<fadecandy_msgs::LEDArray>("/set_leds", 1, &FadecandyDriverRos::setLedsCallback, this);
   initialized_ = false;
 }
 
@@ -68,6 +68,7 @@ void FadecandyDriverRos::setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr&
     return;
   }
 };
+
 void FadecandyDriverRos::diagnosticsCallback(diagnostic_updater::DiagnosticStatusWrapper& diagnostic_status)
 {
   if (FadecandyDriver::fadecandy_device_ != NULL)
@@ -79,6 +80,7 @@ void FadecandyDriverRos::diagnosticsCallback(diagnostic_updater::DiagnosticStatu
     diagnostic_status.summary(diagnostic_msgs::DiagnosticStatus::ERROR, "Disconnected");
   }
 }
+
 void FadecandyDriverRos::timerCallback(const ros::TimerEvent& e)
 {
   diagnostic_updater_.force_update();
