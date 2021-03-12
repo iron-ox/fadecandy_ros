@@ -15,7 +15,7 @@ FadecandyDriverRos::FadecandyDriverRos()
 
   diagnostic_updater_.add("Info", this, &FadecandyDriverRos::diagnosticsCallback);
 
-  led_subscriber_ = nh.subscribe<fadecandy_msgs::LEDArray>("/set_leds", 1, &FadecandyDriverRos::setLedsCallback, this);
+  led_subscriber_ = nh.subscribe<fadecandy_msgs::LEDArray>("set_leds", 1, &FadecandyDriverRos::setLedsCallback, this);
   initialized_ = false;
 }
 

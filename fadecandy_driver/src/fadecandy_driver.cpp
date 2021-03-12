@@ -14,8 +14,6 @@
 
 #include "./fadecandy_driver.h"
 
-constexpr int BITS = 8;
-
 namespace fadecandy_driver
 {
 std::vector<unsigned char> intToCharArray(unsigned char* buffer, int in, const size_t byts_per_int)
