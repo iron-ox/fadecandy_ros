@@ -44,7 +44,10 @@ void FadecandyDriver::findUsbDevice()
     libusb_device_descriptor desc = { 0 };
 
     rc = libusb_get_device_descriptor(device, &desc);
-    assert(rc == 0);
+    if (rc < 0)
+    {
+      throw std::runtime_error("Coudln't get device descriptor.");
+    }
     if (desc.idVendor == USB_VENDOR_ID && desc.idProduct == USB_PRODUCT_ID)
     {
       fadecandy_device_ = device;
@@ -235,7 +238,7 @@ void FadecandyDriver::release()
   r = libusb_release_interface(dev_handle_, INTERFACE_NO);
   if (r < 0)
   {
-    throw std::runtime_error("Coudln't release device.");
+    throw std::runtime_error("Could not release device.");
   }
   libusb_close(dev_handle_);
   libusb_exit(context_);
@@ -247,18 +250,18 @@ bool FadecandyDriver::intialize()
   findUsbDevice();
   if (!fadecandy_device_)
   {
-    return false;
+    throw std::runtime_error("Could not find device.");
   }
   uint r = libusb_init(&context_);
   if (r < 0)
   {
-    return false;
+    throw std::runtime_error("Could not find device.");
   }
   dev_handle_ = libusb_open_device_with_vid_pid(context_, USB_VENDOR_ID, USB_PRODUCT_ID);
 
   if (dev_handle_ == NULL)
   {
-    return false;
+    throw std::runtime_error("Could not open device.");
   }
 
   // Check if kernel driver, detach
@@ -266,7 +269,7 @@ bool FadecandyDriver::intialize()
   {
     if (libusb_detach_kernel_driver(dev_handle_, INTERFACE_NO) != 0)
     {
-      return false;
+      throw std::runtime_error("Could not detach kernel driver.");
     }
   }
 
@@ -274,7 +277,7 @@ bool FadecandyDriver::intialize()
   r = libusb_claim_interface(dev_handle_, INTERFACE_NO);
   if (r < 0)
   {
-    return false;
+    throw std::runtime_error("Could not claim device interface.");
   }
 
   unsigned char serial[64];
@@ -292,7 +295,7 @@ bool FadecandyDriver::intialize()
     r = libusb_bulk_transfer(dev_handle_, USB_ENDPOINT, packets[i].data(), 64, &actual_written, 10000);
     if (r != 0 && actual_written != 64)
     {
-      return false;
+      throw std::runtime_error("Failed to write data on device.");
     }
   }
   return true;

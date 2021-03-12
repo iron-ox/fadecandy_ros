@@ -14,25 +14,6 @@ int main(int argc, char** argv)
   double restart_patience = local_nh.param("restart_patience", 1.);
 
   fadecandy_driver::FadecandyDriverRos node;
-
-  while (ros::ok())
-  {
-    try
-    {
-      if (!node.initialized_)
-      {
-        ROS_INFO("Connecting to Fadecandy device ..");
-        node.run();
-      }
-    }
-    catch (const std::exception& e)
-    {
-      ROS_ERROR("Exception: %s", e.what());
-      ROS_INFO("Restarting driver in %.2f seconds ..", restart_patience);
-
-      ros::Duration(restart_patience).sleep();
-    }
-    ros::spinOnce();
-  }
+  node.run(restart_patience);
   return 0;
 }

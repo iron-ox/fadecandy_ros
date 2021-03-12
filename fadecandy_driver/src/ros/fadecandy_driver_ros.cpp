@@ -19,27 +19,41 @@ FadecandyDriverRos::FadecandyDriverRos()
   initialized_ = false;
 }
 
-void FadecandyDriverRos::run()
+void FadecandyDriverRos::connect()
 {
   if (fadecandy_device_ != NULL)
   {
     release();
     fadecandy_device_ = NULL;
   }
-
   if (!initialized_)
   {
     initialized_ = FadecandyDriverRos::intialize();
-    if (initialized_)
-    {
-      ROS_INFO("Connected to Fadecandy device");
+    ROS_INFO("Connected to Fadecandy device");
+    diagnostic_updater_.setHardwareID(serial_number_);
+  }
+}
 
-      diagnostic_updater_.setHardwareID(serial_number_);
-    }
-    else
+void FadecandyDriverRos::run(double restart_patience)
+{
+  while (ros::ok())
+  {
+    try
     {
-      throw std::runtime_error("Device not found! Could not write on the driver.");
+      if (!initialized_)
+      {
+        ROS_INFO("Connecting to Fadecandy device ..");
+        connect();
+      }
     }
+    catch (const std::exception& e)
+    {
+      ROS_ERROR("Exception: %s", e.what());
+      ROS_INFO("Restarting driver in %.2f seconds ..", restart_patience);
+
+      ros::Duration(restart_patience).sleep();
+    }
+    ros::spinOnce();
   }
 }
 

@@ -22,9 +22,15 @@ public:
   FadecandyDriverRos();
 
   //!
-  //! \brief run Construct the connection with the driver
+  //! \brief connect Construct the connection with the driver
   //!
-  void run();
+  void connect();
+
+  //!
+  //! \brief run Listen to LED messages and publishes the diagnostic of the driver
+  //! \param restart_patience Restart patience
+  //!
+  void run(double restart_patience);
 
   bool initialized_;
 
