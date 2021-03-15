@@ -16,12 +16,13 @@
 
 namespace fadecandy_driver
 {
-std::vector<unsigned char> intToCharArray(unsigned char* buffer, int in, const size_t byts_per_int)
+std::vector<unsigned char> intToCharArray(int in, const size_t bytes_per_int)
 {
+  unsigned char buffer[bytes_per_int];
   std::vector<unsigned char> char_array;
-  for (size_t i = 0; i < byts_per_int; i++)
+  for (size_t i = 0; i < bytes_per_int; i++)
   {
-    size_t shift = 8 * (byts_per_int - 1 - i);
+    size_t shift = 8 * (bytes_per_int - 1 - i);
     buffer[i] = (in >> shift) & 0xff;
     char_array.push_back(buffer[i]);
   }
@@ -31,12 +32,15 @@ std::vector<unsigned char> intToCharArray(unsigned char* buffer, int in, const s
 
 void FadecandyDriver::findUsbDevice()
 {
-  libusb_device** list = NULL;
+  libusb_device** list = nullptr;
   int rc = 0;
   unsigned count = 0;
 
   rc = libusb_init(&context_);
-
+  if (rc < 0)
+  {
+    throw std::runtime_error("Could not create USB session.");
+  }
   count = libusb_get_device_list(context_, &list);
   for (size_t idx = 0; idx < count; ++idx)
   {
@@ -46,7 +50,7 @@ void FadecandyDriver::findUsbDevice()
     rc = libusb_get_device_descriptor(device, &desc);
     if (rc < 0)
     {
-      throw std::runtime_error("Coudln't get device descriptor.");
+      throw std::runtime_error("Could not get device descriptor.");
     }
     if (desc.idVendor == USB_VENDOR_ID && desc.idProduct == USB_PRODUCT_ID)
     {
@@ -54,10 +58,12 @@ void FadecandyDriver::findUsbDevice()
       fadecandy_device_descriptor_ = desc;
     }
   }
+  libusb_free_device_list(list, count);
+  libusb_exit(context_);
 }
 
 std::vector<std::vector<unsigned char>>
-FadecandyDriver::makeVideoUsbPackets(std::vector<std::vector<Color>> led_array_colors)
+FadecandyDriver::makeVideoUsbPackets(const std::vector<std::vector<Color>>& led_array_colors)
 {
   int led_index = 0;
   std::vector<Color> all_led_colors(LEDS_PER_STRIP * NUM_STRIPS, { 0, 0, 0 });
@@ -69,18 +75,15 @@ FadecandyDriver::makeVideoUsbPackets(std::vector<std::vector<Color>> led_array_c
       all_led_colors[led_index] = led_array_colors[i][j];
     }
   }
-  assert(all_led_colors.size() == LEDS_PER_STRIP * NUM_STRIPS);
   std::vector<std::vector<unsigned char>> packets;
-  std::vector<unsigned char> packet;
   std::vector<Color> packet_leds;
   std::vector<Color> remaining_leds = all_led_colors;
-  std::vector<int> color_bytes;
   int control;
 
   while (remaining_leds.size() > 0)
   {
-    color_bytes.clear();
-    packet.clear();
+    std::vector<int> color_bytes;
+    std::vector<unsigned char> packet;
 
     if (remaining_leds.size() < LEDS_PER_PACKET)
     {
@@ -105,10 +108,10 @@ FadecandyDriver::makeVideoUsbPackets(std::vector<std::vector<Color>> led_array_c
       color_bytes.push_back(packet_leds[i].g);
       color_bytes.push_back(packet_leds[i].b);
     }
-
-    if (63 - color_bytes.size() > 0)
+    // construnt USB packet and leave the first byte fot the control byte
+    if ((USB_PACKET_SIZE - 1) - color_bytes.size() > 0)
     {
-      int j = 63 - color_bytes.size();
+      int j = (USB_PACKET_SIZE - 1) - color_bytes.size();
       for (int i = 0; i < j; i++)
       {
         color_bytes.push_back(0);
@@ -117,10 +120,9 @@ FadecandyDriver::makeVideoUsbPackets(std::vector<std::vector<Color>> led_array_c
 
     for (size_t i = 0; i < color_bytes.size(); i++)
     {
-      int byts_per_int = 1;
-      unsigned char buffer[byts_per_int];
+      int bytes_per_int = 1;
       std::vector<unsigned char> bufferv;
-      bufferv = intToCharArray(buffer, color_bytes[i], byts_per_int);
+      bufferv = intToCharArray(color_bytes[i], bytes_per_int);
       packet.insert(packet.end(), bufferv.begin(), bufferv.end());
     }
 
@@ -133,14 +135,13 @@ FadecandyDriver::makeVideoUsbPackets(std::vector<std::vector<Color>> led_array_c
   return packets;
 }
 
-std::vector<std::vector<unsigned char>> FadecandyDriver::makeLookupTablePackets(std::vector<int> red_lookup_values,
-                                                                                std::vector<int> green_lookup_values,
-                                                                                std::vector<int> blue_lookup_values)
+std::vector<std::vector<unsigned char>> FadecandyDriver::makeLookupTablePackets(
+    const std::vector<int>& red_lookup_values, const std::vector<int>& green_lookup_values,
+    const std::vector<int>& blue_lookup_values)
 {
   assert(red_lookup_values.size() == LOOKUP_VALUES_PER_CHANNEL);
   assert(green_lookup_values.size() == LOOKUP_VALUES_PER_CHANNEL);
   assert(blue_lookup_values.size() == LOOKUP_VALUES_PER_CHANNEL);
-  std::vector<unsigned char> packet;
   std::vector<std::vector<unsigned char>> packets;
   std::vector<int> remaining_lookup_values;
   std::vector<int> packet_lookup_values;
@@ -152,7 +153,8 @@ std::vector<std::vector<unsigned char>> FadecandyDriver::makeLookupTablePackets(
 
   while (remaining_lookup_values.size() > 0)
   {
-    packet.clear();
+    std::vector<unsigned char> packet;
+
     if (remaining_lookup_values.size() < LOOKUP_VALUES_PER_PACKET)
     {
       packet_lookup_values.assign(remaining_lookup_values.begin(), remaining_lookup_values.end());
@@ -182,10 +184,9 @@ std::vector<std::vector<unsigned char>> FadecandyDriver::makeLookupTablePackets(
 
     for (size_t i = 0; i < packet_lookup_values.size(); i++)
     {
-      int byts_per_int = 2;
-      unsigned char buffer[byts_per_int];
+      int bytes_per_int = 2;
       std::vector<unsigned char> bufferv;
-      bufferv = intToCharArray(buffer, packet_lookup_values[i], byts_per_int);
+      bufferv = intToCharArray(packet_lookup_values[i], bytes_per_int);
       packet.insert(packet.end(), bufferv.begin(), bufferv.end());
     }
     // add control byte
@@ -199,7 +200,10 @@ std::vector<std::vector<unsigned char>> FadecandyDriver::makeLookupTablePackets(
 }
 
 std::vector<int> FadecandyDriver::makeDefaultLookupTable()
-{
+{  // color correction curve borrowed from the USB example in the main fadecandy repo:
+  //
+  // https://github.com/scanlime/fadecandy/blob/master/examples/python/usb-lowlevel.py
+  //
   std::vector<int> lookup_values;
   for (int row = 0; row < 257; row++)
   {
@@ -214,12 +218,13 @@ void FadecandyDriver::setColors(std::vector<std::vector<Color>> led_colors)
   {
     uint r = libusb_init(&context_);
     int actual_written;
-
+    const int timeout = 10000;
     std::vector<std::vector<unsigned char>> usb_packets = FadecandyDriver::makeVideoUsbPackets(led_colors);
     for (size_t i = 0; i < usb_packets.size(); i++)
     {
-      r = libusb_bulk_transfer(dev_handle_, USB_ENDPOINT, usb_packets[i].data(), 64, &actual_written, 10000);
-      if (r != 0 || actual_written != 64)
+      r = libusb_bulk_transfer(dev_handle_, USB_ENDPOINT, usb_packets[i].data(), USB_PACKET_SIZE, &actual_written,
+                               timeout);
+      if (r != 0 || actual_written != USB_PACKET_SIZE)
       {
         throw std::runtime_error("Could not write on the driver.");
       }
@@ -231,9 +236,8 @@ void FadecandyDriver::setColors(std::vector<std::vector<Color>> led_colors)
   }
 }
 
-void FadecandyDriver::release()
+void FadecandyDriver::releaseInterface()
 {
-  // Releasing interface
   uint r = libusb_init(&context_);
   r = libusb_release_interface(dev_handle_, INTERFACE_NO);
   if (r < 0)
@@ -255,7 +259,7 @@ bool FadecandyDriver::intialize()
   uint r = libusb_init(&context_);
   if (r < 0)
   {
-    throw std::runtime_error("Could not find device.");
+    throw std::runtime_error("Could not create USB session.");
   }
   dev_handle_ = libusb_open_device_with_vid_pid(context_, USB_VENDOR_ID, USB_PRODUCT_ID);
 
@@ -281,19 +285,19 @@ bool FadecandyDriver::intialize()
   }
 
   unsigned char serial[64];
-  libusb_get_string_descriptor_ascii(dev_handle_, fadecandy_device_descriptor_.iSerialNumber, serial, 64);
+  libusb_get_string_descriptor_ascii(dev_handle_, fadecandy_device_descriptor_.iSerialNumber, serial, USB_PACKET_SIZE);
   serial_number_ = reinterpret_cast<char*>(serial);
 
   // Prepare command
   int actual_written;
+  const int timeout = 10000;
 
   std::vector<int> array = makeDefaultLookupTable();
   std::vector<std::vector<unsigned char>> packets = makeLookupTablePackets(array, array, array);
-
   for (size_t i = 0; i < packets.size(); i++)
   {
-    r = libusb_bulk_transfer(dev_handle_, USB_ENDPOINT, packets[i].data(), 64, &actual_written, 10000);
-    if (r != 0 && actual_written != 64)
+    r = libusb_bulk_transfer(dev_handle_, USB_ENDPOINT, packets[i].data(), USB_PACKET_SIZE, &actual_written, timeout);
+    if (r != 0 && actual_written != USB_PACKET_SIZE)
     {
       throw std::runtime_error("Failed to write data on device.");
     }

@@ -54,9 +54,9 @@ public:
   void findUsbDevice();
 
   //!
-  //! \brief release fadecandy device interface
+  //! \brief releaseInterface release fadecandy device interface
   //!
-  void release();
+  void releaseInterface();
 
   //!
   //! \brief initialize fadecandy device interface
@@ -79,16 +79,16 @@ private:
   //! less than the total number of LEDs in any given strip, all unspecified
   //! LEDs are left dark.
   //!
-  std::vector<std::vector<unsigned char>> makeVideoUsbPackets(std::vector<std::vector<Color>>);
+  std::vector<std::vector<unsigned char>> makeVideoUsbPackets(const std::vector<std::vector<Color>>&);
 
   //!
   //! \brief makeLookupTablePackets creates USB packets for a simple color
   //! lookup table. The entire red lookup table comes first, then the entire
   //! green channel, then the entire red channel.
   //!
-  std::vector<std::vector<unsigned char>> makeLookupTablePackets(std::vector<int> red_lookup_values,
-                                                                 std::vector<int> green_lookup_values,
-                                                                 std::vector<int> blue_lookup_values);
+  std::vector<std::vector<unsigned char>> makeLookupTablePackets(const std::vector<int>& red_lookup_values,
+                                                                 const std::vector<int>& green_lookup_values,
+                                                                 const std::vector<int>& blue_lookup_values);
   //!
   //! \brief makeLookupTablePackets returns lookup tables as 3 lists of lookup
   //! values - one for the red channel, one for the green channel, and one for

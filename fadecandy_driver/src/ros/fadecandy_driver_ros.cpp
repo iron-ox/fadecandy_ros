@@ -23,7 +23,7 @@ void FadecandyDriverRos::connect()
 {
   if (fadecandy_device_ != NULL)
   {
-    release();
+    releaseInterface();
     fadecandy_device_ = NULL;
   }
   if (!initialized_)
