@@ -4,7 +4,10 @@ project(fadecandy_driver)
 add_compile_options(-std=c++11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
-
+# Default to RelWithDebInfo mode.
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE RelWithDebInfo)
+endif()
 ##################
 ##  Build setup ##
 ##################
@@ -14,6 +17,9 @@ find_package(catkin REQUIRED COMPONENTS
   fadecandy_msgs
   roscpp
 )
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+find_package(libusb REQUIRED)
+
 
 catkin_package(
   CATKIN_DEPENDS
@@ -28,12 +34,14 @@ catkin_package(
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${LIBUSB_INCLUDE_DIRS}
+
 )
 
 add_library(${PROJECT_NAME}
   src/${PROJECT_NAME}.cpp
 )
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} usb-1.0)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${LIBUSB_LIBRARIES})
 
 add_library(${PROJECT_NAME}_ros
   src/ros/${PROJECT_NAME}_ros.cpp
