@@ -77,27 +77,26 @@ FadecandyDriver::makeVideoUsbPackets(const std::vector<std::vector<Color>>& led_
   }
   std::vector<std::vector<unsigned char>> packets;
   std::vector<Color> packet_leds;
-  std::vector<Color> remaining_leds = all_led_colors;
   int control;
 
-  while (remaining_leds.size() > 0)
+  while (all_led_colors.size() > 0)
   {
     std::vector<int> color_bytes;
     std::vector<unsigned char> packet;
 
-    if (remaining_leds.size() < LEDS_PER_PACKET)
+    if (all_led_colors.size() < LEDS_PER_PACKET)
     {
-      packet_leds.assign(remaining_leds.begin(), remaining_leds.end());
-      remaining_leds.erase(remaining_leds.begin(), remaining_leds.end());
+      packet_leds.assign(all_led_colors.begin(), all_led_colors.end());
+      all_led_colors.erase(all_led_colors.begin(), all_led_colors.end());
     }
     else
     {
-      packet_leds.assign(remaining_leds.begin(), remaining_leds.begin() + LEDS_PER_PACKET);
-      remaining_leds.assign(remaining_leds.begin() + LEDS_PER_PACKET, remaining_leds.end());
+      packet_leds.assign(all_led_colors.begin(), all_led_colors.begin() + LEDS_PER_PACKET);
+      all_led_colors.erase(all_led_colors.begin(), all_led_colors.begin() + LEDS_PER_PACKET);
     }
 
     control = packets.size() | PACKET_TYPE_VIDEO;
-    if (remaining_leds.size() == 0)
+    if (all_led_colors.size() == 0)
     {
       control |= FINAL_PACKET_BIT;
     }
@@ -108,7 +107,7 @@ FadecandyDriver::makeVideoUsbPackets(const std::vector<std::vector<Color>>& led_
       color_bytes.push_back(packet_leds[i].g);
       color_bytes.push_back(packet_leds[i].b);
     }
-    // construnt USB packet and leave the first byte fot the control byte
+    // construnt USB packet and leave the first byte for the control byte
     if ((USB_PACKET_SIZE - 1) - color_bytes.size() > 0)
     {
       int j = (USB_PACKET_SIZE - 1) - color_bytes.size();
@@ -164,8 +163,8 @@ std::vector<std::vector<unsigned char>> FadecandyDriver::makeLookupTablePackets(
     {
       packet_lookup_values.assign(remaining_lookup_values.begin(),
                                   remaining_lookup_values.begin() + LOOKUP_VALUES_PER_PACKET);
-      remaining_lookup_values.assign(remaining_lookup_values.begin() + LOOKUP_VALUES_PER_PACKET,
-                                     remaining_lookup_values.end());
+      remaining_lookup_values.erase(remaining_lookup_values.begin(),
+                                    remaining_lookup_values.begin() + LOOKUP_VALUES_PER_PACKET);
     }
     control = packets.size() | PACKET_TYPE_LUT;
     if (remaining_lookup_values.size() == 0)
