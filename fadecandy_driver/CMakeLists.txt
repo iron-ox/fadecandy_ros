@@ -13,9 +13,9 @@ find_package(catkin REQUIRED COMPONENTS
   fadecandy_msgs
   roscpp
 )
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 find_package(libusb REQUIRED)
-
 
 catkin_package(
   CATKIN_DEPENDS
@@ -31,7 +31,6 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${LIBUSB_INCLUDE_DIRS}
-
 )
 
 add_library(${PROJECT_NAME}
