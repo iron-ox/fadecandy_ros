@@ -62,10 +62,9 @@ void FadecandyDriverRos::run(double restart_patience)
 void FadecandyDriverRos::setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr& led_array_msg)
 {
   std::vector<std::vector<Color>> led_array_colors;
-  std::vector<Color> led_strip_colors;
   for (size_t i = 0; i < led_array_msg->strips.size(); ++i)
   {
-    led_strip_colors.clear();
+    std::vector<Color> led_strip_colors;
     for (size_t j = 0; j < led_array_msg->strips[i].colors.size(); ++j)
     {
       led_strip_colors.push_back({ (int)(led_array_msg->strips[i].colors[j].r * 255),
