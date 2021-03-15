@@ -1,8 +1,36 @@
-//
-// Copyright (c) 2020 Eurotec
-//
-// @author Jad Haj Mustafa
-//
+/*
+ * Copyright (c) 2021 Eurotec, Netherlands
+ * All rights reserved.
+ *
+ * Author: Jad Haj Mustafa
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above
+ * copyright notice, this list of conditions and the following
+ * disclaimer in the documentation and/or other materials provided
+ * with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its
+ * contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 
 #include <algorithm>
 #include <cassert>
@@ -18,6 +46,22 @@
 
 namespace fadecandy_driver
 {
+constexpr int LEDS_PER_PACKET = 21;
+constexpr int LOOKUP_VALUES_PER_PACKET = 31;
+constexpr int LOOKUP_VALUES_PER_CHANNEL = 257;
+constexpr int USB_PACKET_SIZE = 64;
+constexpr int PACKET_TYPE_VIDEO = 0x00;
+constexpr int PACKET_TYPE_LUT = 0x40;
+constexpr int FINAL_PACKET_BIT = 0x20;
+
+constexpr int USB_PRODUCT_ID = 0x607a;
+constexpr int USB_VENDOR_ID = 0x1d50;
+constexpr int USB_ENDPOINT = 1;
+constexpr int INTERFACE_NO = 0x01;
+
+constexpr int LEDS_PER_STRIP = 64;
+constexpr int NUM_STRIPS = 8;
+
 std::vector<unsigned char> intToCharArray(int in, const size_t bytes_per_int)
 {
   if (in > pow(2, bytes_per_int * 8))
@@ -33,6 +77,10 @@ std::vector<unsigned char> intToCharArray(int in, const size_t bytes_per_int)
   }
   std::reverse(char_array.begin(), char_array.end());
   return char_array;
+}
+
+FadecandyDriver::Color::Color(int r, int g, int b) : r_(r), g_(g), b_(b)
+{
 }
 
 void FadecandyDriver::findUsbDevice()
@@ -108,9 +156,9 @@ FadecandyDriver::makeVideoUsbPackets(const std::vector<std::vector<Color>>& led_
 
     for (size_t i = 0; i < packet_leds.size(); i++)
     {
-      color_bytes.push_back(packet_leds[i].r);
-      color_bytes.push_back(packet_leds[i].g);
-      color_bytes.push_back(packet_leds[i].b);
+      color_bytes.push_back(packet_leds[i].r_);
+      color_bytes.push_back(packet_leds[i].g_);
+      color_bytes.push_back(packet_leds[i].b_);
     }
     // construnt USB packet and leave the first byte for the control byte
     if ((USB_PACKET_SIZE - 1) - color_bytes.size() > 0)

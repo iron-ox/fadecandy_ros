@@ -1,11 +1,40 @@
-//
-// Copyright (c) 2020 Eurotec
-//
-// @author Jad Haj Mustafa
-//
+/*
+ * Copyright (c) 2021 Eurotec, Netherlands
+ * All rights reserved.
+ *
+ * Author: Jad Haj Mustafa
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above
+ * copyright notice, this list of conditions and the following
+ * disclaimer in the documentation and/or other materials provided
+ * with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its
+ * contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#include <fadecandy_msgs/LEDArray.h>
 
 #include "./fadecandy_driver_ros.h"
-#include <fadecandy_msgs/LEDArray.h>
 
 namespace fadecandy_driver
 {
@@ -18,7 +47,6 @@ FadecandyDriverRos::FadecandyDriverRos()
   diagnostic_updater_.add("Info", this, &FadecandyDriverRos::diagnosticsCallback);
 
   led_subscriber_ = nh.subscribe<fadecandy_msgs::LEDArray>("set_leds", 1, &FadecandyDriverRos::setLedsCallback, this);
-  initialized_ = false;
 }
 
 void FadecandyDriverRos::connect()
@@ -67,15 +95,15 @@ void FadecandyDriverRos::setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr&
     std::vector<Color> led_strip_colors;
     for (size_t j = 0; j < led_array_msg->strips[i].colors.size(); ++j)
     {
-      led_strip_colors.push_back({ (int)(led_array_msg->strips[i].colors[j].r * 255),
-                                   (int)(led_array_msg->strips[i].colors[j].g * 255),
-                                   (int)(led_array_msg->strips[i].colors[j].b * 255) });
+      led_strip_colors.emplace_back(static_cast<int>(led_array_msg->strips[i].colors[j].r * 255),
+                                    static_cast<int>(led_array_msg->strips[i].colors[j].g * 255),
+                                    static_cast<int>(led_array_msg->strips[i].colors[j].b * 255));
     }
     led_array_colors.push_back(led_strip_colors);
   }
   try
   {
-    FadecandyDriver::setColors(led_array_colors);
+    setColors(led_array_colors);
   }
   catch (const std::exception& e)
   {
@@ -86,7 +114,7 @@ void FadecandyDriverRos::setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr&
 
 void FadecandyDriverRos::diagnosticsCallback(diagnostic_updater::DiagnosticStatusWrapper& diagnostic_status)
 {
-  if (FadecandyDriver::fadecandy_device_ != NULL)
+  if (fadecandy_device_ != NULL)
   {
     diagnostic_status.summary(diagnostic_msgs::DiagnosticStatus::OK, "Connected");
   }
