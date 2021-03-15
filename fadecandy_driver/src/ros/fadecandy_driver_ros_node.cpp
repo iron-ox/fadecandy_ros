@@ -1,5 +1,7 @@
 //
-// Copyright (c) 2021 Eurotec
+// Copyright (c) 2020 Eurotec
+//
+// @author Jad Haj Mustafa
 //
 
 #include <ros/init.h>
