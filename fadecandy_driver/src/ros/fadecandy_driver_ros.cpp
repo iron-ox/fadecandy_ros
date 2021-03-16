@@ -41,8 +41,11 @@ namespace fadecandy_driver
 FadecandyDriverRos::FadecandyDriverRos(double restart_patience)
 {
   ros::NodeHandle nh;
+
   restart_patience_ = restart_patience;
+
   timer_ = nh.createTimer(ros::Duration(restart_patience_), &FadecandyDriverRos::timerCallback, this);
+
   connectionCheckTimer_ =
       nh.createTimer(ros::Duration(restart_patience_), &FadecandyDriverRos::connectionCheckTimerCallback, this);
 
@@ -115,7 +118,7 @@ void FadecandyDriverRos::connectionCheckTimerCallback(const ros::TimerEvent& e)
       if (isConnected_)
       {
         diagnostic_updater_.setHardwareID(serial_number_);
-        ROS_INFO("Connected to Fadecandy device ..");
+        ROS_INFO("Connected to Fadecandy device");
       }
     }
     catch (const std::exception& e)
