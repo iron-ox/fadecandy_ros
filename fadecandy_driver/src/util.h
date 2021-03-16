@@ -1,0 +1,3 @@
+namespace fadecandy_driver
+{
+}

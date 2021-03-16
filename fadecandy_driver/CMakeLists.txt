@@ -35,6 +35,7 @@ include_directories(
 
 add_library(${PROJECT_NAME}
   src/${PROJECT_NAME}.cpp
+  src/util.cpp
 )
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${LIBUSB_LIBRARIES})
 

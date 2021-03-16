@@ -43,7 +43,7 @@ int main(int argc, char** argv)
   ros::NodeHandle local_nh("~");
   double restart_patience = local_nh.param("restart_patience", 1.);
 
-  fadecandy_driver::FadecandyDriverRos node(restart_patience);
+  fadecandy_driver::FadecandyDriverROS node(restart_patience);
   node.run();
   return 0;
 }

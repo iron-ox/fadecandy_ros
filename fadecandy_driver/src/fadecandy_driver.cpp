@@ -65,8 +65,10 @@ constexpr int NUM_STRIPS = 8;
 std::vector<unsigned char> intToCharArray(int in, const size_t bytes_per_int)
 {
   if (in > pow(2, bytes_per_int * 8))
+  {
     throw std::overflow_error("Overflow error while converting integer " + std::to_string(in) + " to char array of " +
                               std::to_string(bytes_per_int) + " bytes");
+  }
   unsigned char buffer[bytes_per_int];
   std::vector<unsigned char> char_array;
   for (size_t i = 0; i < bytes_per_int; i++)
@@ -252,7 +254,9 @@ std::vector<std::vector<unsigned char>> FadecandyDriver::makeLookupTablePackets(
 }
 
 std::vector<int> FadecandyDriver::makeDefaultLookupTable()
-{  // color correction curve borrowed from the USB example in the main fadecandy repo:
+{
+  //
+  // color correction curve borrowed from the USB example in the main fadecandy repo:
   //
   // https://github.com/scanlime/fadecandy/blob/master/examples/python/usb-lowlevel.py
   //
@@ -266,31 +270,45 @@ std::vector<int> FadecandyDriver::makeDefaultLookupTable()
 
 void FadecandyDriver::setColors(std::vector<std::vector<Color>> led_colors)
 {
+  if (!isConnected())
+  {
+    throw std::runtime_error("Not connected");
+  }
+
   if (fadecandy_device_ != NULL)
   {
     uint r = libusb_init(&context_);
     int actual_written;
     const int timeout = 10000;
-    std::vector<std::vector<unsigned char>> usb_packets = FadecandyDriver::makeVideoUsbPackets(led_colors);
+    std::vector<std::vector<unsigned char>> usb_packets = makeVideoUsbPackets(led_colors);
     for (size_t i = 0; i < usb_packets.size(); i++)
     {
       r = libusb_bulk_transfer(dev_handle_, USB_ENDPOINT, usb_packets[i].data(), USB_PACKET_SIZE, &actual_written,
                                timeout);
       if (r != 0 || actual_written != USB_PACKET_SIZE)
       {
+        is_connected_ = false;
         throw std::runtime_error("Could not write on the driver.");
       }
     }
   }
   else
   {
+    is_connected_ = false;
     throw std::runtime_error("Device not found! Could not write on the driver.");
   }
 }
 
 void FadecandyDriver::releaseInterface()
 {
+  is_connected_ = false;
+
   uint r = libusb_init(&context_);
+  if (r < 0)
+  {
+    throw std::runtime_error("Could not initialize device.");
+  }
+
   r = libusb_release_interface(dev_handle_, INTERFACE_NO);
   if (r < 0)
   {
@@ -300,8 +318,11 @@ void FadecandyDriver::releaseInterface()
   libusb_exit(context_);
 }
 
-bool FadecandyDriver::intialize()
-{  // Release interface
+std::string FadecandyDriver::connect()
+{
+  is_connected_ = false;
+
+  // Release interface
   if (fadecandy_device_ != NULL)
   {
     releaseInterface();
@@ -341,7 +362,7 @@ bool FadecandyDriver::intialize()
     throw std::runtime_error("Could not claim device interface.");
   }
 
-  unsigned char serial[64];
+  unsigned char serial[USB_PACKET_SIZE];
   libusb_get_string_descriptor_ascii(dev_handle_, fadecandy_device_descriptor_.iSerialNumber, serial, USB_PACKET_SIZE);
   serial_number_ = reinterpret_cast<char*>(serial);
 
@@ -351,14 +372,31 @@ bool FadecandyDriver::intialize()
 
   std::vector<int> array = makeDefaultLookupTable();
   std::vector<std::vector<unsigned char>> packets = makeLookupTablePackets(array, array, array);
-  for (size_t i = 0; i < packets.size(); i++)
+  for (auto& packet : packets)
   {
-    r = libusb_bulk_transfer(dev_handle_, USB_ENDPOINT, packets[i].data(), USB_PACKET_SIZE, &actual_written, timeout);
+    r = libusb_bulk_transfer(dev_handle_, USB_ENDPOINT, packet.data(), USB_PACKET_SIZE, &actual_written, timeout);
     if (r != 0 && actual_written != USB_PACKET_SIZE)
     {
       throw std::runtime_error("Failed to write data on device.");
     }
   }
-  return true;
+
+  is_connected_ = true;
+
+  return serial_number_;
+}
+
+bool FadecandyDriver::isConnected()
+{
+  return dev_handle_ != NULL;
+}
+
+std::string FadecandyDriver::getSerialNumber()
+{
+  if (!isConnected())
+  {
+    throw std::runtime_error("Not connected");
+  }
+  return serial_number_;
 }
 }  // namespace fadecandy_driver

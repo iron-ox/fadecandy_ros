@@ -44,14 +44,14 @@ namespace fadecandy_driver
 //!
 //! \brief The FadecandyDriverRos class wraps ROS
 //!
-class FadecandyDriverRos : public FadecandyDriver
+class FadecandyDriverROS
 {
 public:
   //!
   //! \brief FadecandyDriverRos fadecandy driver ROS wrapper
   //! \param restart_patience Restart patience
   //!
-  FadecandyDriverRos(double restart_patience);
+  FadecandyDriverROS(double restart_patience);
 
   //!
   //! \brief run Listen to LED messages and publishes the diagnostic of the driver
@@ -59,6 +59,8 @@ public:
   void run();
 
 private:
+  FadecandyDriver driver_;
+
   //!
   //! \brief setLedsCallback Fired when a new LEDArray message is received
   //!
@@ -73,14 +75,14 @@ private:
   //!
   //! \brief timer_ Periodic timer for updating the diagnostics
   //!
-  ros::Timer timer_;
-  void timerCallback(const ros::TimerEvent& e);
+  ros::Timer diagnostics_timer_;
+  void diagnosticsTimerCallback(const ros::TimerEvent& e);
 
   //!
-  //! \brief connectiontimer_ Periodic timer for checking the connection
+  //! \brief connection_check_timer_ Periodic timer for checking the connection
   //!
-  ros::Timer connectionCheckTimer_;
-  void connectionCheckTimerCallback(const ros::TimerEvent& e);
+  ros::Timer connect_timer_;
+  void connectTimerCallback(const ros::TimerEvent& e);
 
   //!
   //! \brief diagnostic_updater_ Diagnostic updater

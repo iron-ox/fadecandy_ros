@@ -57,12 +57,6 @@ public:
     int b_;
   };
 
-  libusb_device* fadecandy_device_ = NULL;
-  libusb_device_descriptor fadecandy_device_descriptor_;
-  libusb_context* context_ = NULL;
-  libusb_device_handle* dev_handle_ = NULL;
-  std::string serial_number_;
-
   //!
   //! \brief setColors Transfer the LED color stream to the driver
   //!
@@ -71,14 +65,29 @@ public:
   //!
   //! \brief initialize Initialize fadecandy device interface and constrcut connection
   //!
-  bool intialize();
+  std::string connect();
 
   //!
-  //! \brief isConnected_ Whether the driver is connected
+  //! \brief isConnected
+  //! \return
   //!
-  bool isConnected_ = false;
+  bool isConnected();
+
+  //!
+  //! \brief getSerialNumber
+  //! \return
+  //!
+  std::string getSerialNumber();
 
 private:
+  libusb_device* fadecandy_device_ = NULL;
+  libusb_device_descriptor fadecandy_device_descriptor_;
+  libusb_context* context_ = NULL;
+  libusb_device_handle* dev_handle_ = NULL;
+
+  std::string serial_number_;
+  bool is_connected_ = false;
+
   //!
   //! \brief makeVideoUsbPackets Construct the USB packets to set all LED
   //! strips to the given colors.
