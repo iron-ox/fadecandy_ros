@@ -64,29 +64,23 @@ public:
   std::string serial_number_;
 
   //!
-  //! \brief findUsbDevice search the fadcandy device with particular vendor and
-  //! product id
+  //! \brief setColors Transfer the LED color stream to the driver
   //!
-  void findUsbDevice();
+  void setColors(std::vector<std::vector<Color>> led_colors);
 
   //!
-  //! \brief releaseInterface release fadecandy device interface
-  //!
-  void releaseInterface();
-
-  //!
-  //! \brief initialize fadecandy device interface
+  //! \brief initialize Initialize fadecandy device interface and constrcut connection
   //!
   bool intialize();
 
   //!
-  //! \brief initialize fadecandy device interface
+  //! \brief isConnected_ Whether the driver is connected
   //!
-  void setColors(std::vector<std::vector<Color>> led_colors);
+  bool isConnected_ = false;
 
 private:
   //!
-  //! \brief makeVideoUsbPackets constructs the USB packets to set all LED
+  //! \brief makeVideoUsbPackets Construct the USB packets to set all LED
   //! strips to the given colors.
   //! To simplify things, we always send values for all 8 * 64 LEDs. If the
   //! physical strips are shorter, or there are less then 8 strips, the extra
@@ -98,7 +92,7 @@ private:
   std::vector<std::vector<unsigned char>> makeVideoUsbPackets(const std::vector<std::vector<Color>>&);
 
   //!
-  //! \brief makeLookupTablePackets creates USB packets for a simple color
+  //! \brief makeLookupTablePackets Create USB packets for a simple color
   //! lookup table. The entire red lookup table comes first, then the entire
   //! green channel, then the entire red channel.
   //!
@@ -106,11 +100,22 @@ private:
                                                                  const std::vector<int>& green_lookup_values,
                                                                  const std::vector<int>& blue_lookup_values);
   //!
-  //! \brief makeLookupTablePackets returns lookup tables as 3 lists of lookup
+  //! \brief makeLookupTablePackets Return lookup tables as 3 lists of lookup
   //! values - one for the red channel, one for the green channel, and one for
   //! the blue channel.
   //!
   std::vector<int> makeDefaultLookupTable();
+
+  //!
+  //! \brief findUsbDevice Search the fadcandy device with particular vendor and
+  //! product id
+  //!
+  void findUsbDevice();
+
+  //!
+  //! \brief releaseInterface Release fadecandy device interface
+  //!
+  void releaseInterface();
 };
 
 }  // namespace fadecandy_driver

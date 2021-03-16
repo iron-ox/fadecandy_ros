@@ -38,53 +38,22 @@
 
 namespace fadecandy_driver
 {
-FadecandyDriverRos::FadecandyDriverRos()
+FadecandyDriverRos::FadecandyDriverRos(double restart_patience)
 {
   ros::NodeHandle nh;
-
-  timer_ = nh.createTimer(ros::Duration(1.), &FadecandyDriverRos::timerCallback, this);
+  restart_patience_ = restart_patience;
+  timer_ = nh.createTimer(ros::Duration(restart_patience_), &FadecandyDriverRos::timerCallback, this);
+  connectionCheckTimer_ =
+      nh.createTimer(ros::Duration(restart_patience_), &FadecandyDriverRos::connectionCheckTimerCallback, this);
 
   diagnostic_updater_.add("Info", this, &FadecandyDriverRos::diagnosticsCallback);
 
   led_subscriber_ = nh.subscribe<fadecandy_msgs::LEDArray>("set_leds", 1, &FadecandyDriverRos::setLedsCallback, this);
 }
 
-void FadecandyDriverRos::connect()
+void FadecandyDriverRos::run()
 {
-  if (fadecandy_device_ != NULL)
-  {
-    releaseInterface();
-    fadecandy_device_ = NULL;
-  }
-  if (!initialized_)
-  {
-    initialized_ = FadecandyDriverRos::intialize();
-    ROS_INFO("Connected to Fadecandy device");
-    diagnostic_updater_.setHardwareID(serial_number_);
-  }
-}
-
-void FadecandyDriverRos::run(double restart_patience)
-{
-  while (ros::ok())
-  {
-    try
-    {
-      if (!initialized_)
-      {
-        ROS_INFO("Connecting to Fadecandy device ..");
-        connect();
-      }
-    }
-    catch (const std::exception& e)
-    {
-      ROS_ERROR("Exception: %s", e.what());
-      ROS_INFO("Restarting driver in %.2f seconds ..", restart_patience);
-
-      ros::Duration(restart_patience).sleep();
-    }
-    ros::spinOnce();
-  }
+  ros::spin();
 }
 
 void FadecandyDriverRos::setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr& led_array_msg)
@@ -101,13 +70,20 @@ void FadecandyDriverRos::setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr&
     }
     led_array_colors.push_back(led_strip_colors);
   }
-  try
+  if (isConnected_)
   {
-    setColors(led_array_colors);
+    try
+    {
+      setColors(led_array_colors);
+    }
+    catch (const std::exception& e)
+    {
+      isConnected_ = false;
+      ROS_ERROR("Error occured: %s ", e.what());
+    }
   }
-  catch (const std::exception& e)
+  else
   {
-    initialized_ = false;
     return;
   }
 };
@@ -128,4 +104,30 @@ void FadecandyDriverRos::timerCallback(const ros::TimerEvent& e)
 {
   diagnostic_updater_.force_update();
 }
+
+void FadecandyDriverRos::connectionCheckTimerCallback(const ros::TimerEvent& e)
+{
+  if (!isConnected_)
+  {
+    try
+    {
+      isConnected_ = intialize();
+      if (isConnected_)
+      {
+        diagnostic_updater_.setHardwareID(serial_number_);
+        ROS_INFO("Connected to Fadecandy device ..");
+      }
+    }
+    catch (const std::exception& e)
+    {
+      ROS_WARN("Failed to connect to Fadecandy device %s; will retry every %f second", serial_number_.c_str(),
+               restart_patience_);
+    }
+  }
+  else
+  {
+    return;
+  }
+}
+
 }  // namespace fadecandy_driver

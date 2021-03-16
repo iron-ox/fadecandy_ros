@@ -301,7 +301,12 @@ void FadecandyDriver::releaseInterface()
 }
 
 bool FadecandyDriver::intialize()
-{
+{  // Release interface
+  if (fadecandy_device_ != NULL)
+  {
+    releaseInterface();
+    fadecandy_device_ = NULL;
+  }
   // Find usb device.
   findUsbDevice();
   if (!fadecandy_device_)

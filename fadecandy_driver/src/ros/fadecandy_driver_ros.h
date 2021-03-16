@@ -49,19 +49,14 @@ class FadecandyDriverRos : public FadecandyDriver
 public:
   //!
   //! \brief FadecandyDriverRos fadecandy driver ROS wrapper
+  //! \param restart_patience Restart patience
   //!
-  FadecandyDriverRos();
-
-  //!
-  //! \brief connect Construct the connection with the driver
-  //!
-  void connect();
+  FadecandyDriverRos(double restart_patience);
 
   //!
   //! \brief run Listen to LED messages and publishes the diagnostic of the driver
-  //! \param restart_patience Restart patience
   //!
-  void run(double restart_patience);
+  void run();
 
 private:
   //!
@@ -76,10 +71,16 @@ private:
   void diagnosticsCallback(diagnostic_updater::DiagnosticStatusWrapper& diagnostic_status);
 
   //!
-  //! \brief timer_ Periodic timer
+  //! \brief timer_ Periodic timer for updating the diagnostics
   //!
   ros::Timer timer_;
   void timerCallback(const ros::TimerEvent& e);
+
+  //!
+  //! \brief connectiontimer_ Periodic timer for checking the connection
+  //!
+  ros::Timer connectionCheckTimer_;
+  void connectionCheckTimerCallback(const ros::TimerEvent& e);
 
   //!
   //! \brief diagnostic_updater_ Diagnostic updater
@@ -92,8 +93,8 @@ private:
   ros::Subscriber led_subscriber_;
 
   //!
-  //! \brief initialized_ Whether the driver is initialized
+  //! \brief restart_patience_ restart patience time
   //!
-  bool initialized_ = false;
+  double restart_patience_ = 0;
 };
 }  // namespace fadecandy_driver
