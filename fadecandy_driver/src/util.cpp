@@ -40,7 +40,7 @@
 #include <libusb-1.0/libusb.h>
 #include <list>
 #include <math.h>
-#include <vector>
+
 #include "./util.h"
 
 namespace fadecandy_driver

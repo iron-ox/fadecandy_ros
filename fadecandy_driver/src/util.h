@@ -1,3 +1,5 @@
+#include <vector>
+
 namespace fadecandy_driver
 {
 //!
