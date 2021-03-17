@@ -74,11 +74,6 @@ private:
   libusb_device_handle* dev_handle_ = NULL;
 
   //!
-  //! \brief serial_number_ device serial number
-  //!
-  std::string serial_number_;
-
-  //!
   //! \brief findUsbDevice Search the fadcandy device with particular vendor and
   //! product id
   //!

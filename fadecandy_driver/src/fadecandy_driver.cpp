@@ -164,7 +164,7 @@ std::string FadecandyDriver::connect()
 
   unsigned char serial[USB_PACKET_SIZE];
   libusb_get_string_descriptor_ascii(dev_handle_, fadecandy_device_descriptor.iSerialNumber, serial, USB_PACKET_SIZE);
-  serial_number_ = reinterpret_cast<char*>(serial);
+  std::string serial_number = reinterpret_cast<char*>(serial);
 
   // Prepare command
   int actual_written;
@@ -182,7 +182,7 @@ std::string FadecandyDriver::connect()
     }
   }
 
-  return serial_number_;
+  return serial_number;
 }
 
 bool FadecandyDriver::isConnected()

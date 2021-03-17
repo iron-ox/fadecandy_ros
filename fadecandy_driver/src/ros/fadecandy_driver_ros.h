@@ -99,4 +99,5 @@ private:
   //!
   double restart_patience_ = 0;
 };
+
 }  // namespace fadecandy_driver

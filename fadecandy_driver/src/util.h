@@ -40,4 +40,5 @@ std::vector<std::vector<unsigned char>> makeLookupTablePackets(const std::vector
 //! the blue channel.
 //!
 std::vector<int> makeDefaultLookupTable();
+
 }  // namespace fadecandy_driver

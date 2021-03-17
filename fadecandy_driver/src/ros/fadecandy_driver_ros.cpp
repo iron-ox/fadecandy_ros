@@ -119,4 +119,5 @@ void FadecandyDriverROS::connectTimerCallback(const ros::TimerEvent& e)
     ROS_WARN_ONCE("Failed to connect to device: %s; will retry every %f seconds", e.what(), restart_patience_);
   }
 }
+
 }  // namespace fadecandy_driver
