@@ -62,10 +62,10 @@ void FadecandyDriverROS::setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr&
     return;
   }
 
-  std::vector<std::vector<FadecandyDriver::Color>> led_array_colors;
+  std::vector<std::vector<Color>> led_array_colors;
   for (const auto& strip : led_array_msg->strips)
   {
-    std::vector<FadecandyDriver::Color> led_strip_colors;
+    std::vector<Color> led_strip_colors;
     for (const auto& color : strip.colors)
     {
       led_strip_colors.emplace_back(static_cast<int>(color.r * 255), static_cast<int>(color.g * 255),
@@ -112,6 +112,7 @@ void FadecandyDriverROS::connectTimerCallback(const ros::TimerEvent& e)
   {
     auto serial_number = driver_.connect();
     diagnostic_updater_.setHardwareID(serial_number);
+    ROS_INFO("Fadecandy device is connected.");
   }
   catch (const std::exception& e)
   {
