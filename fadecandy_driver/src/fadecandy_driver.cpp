@@ -46,7 +46,7 @@ constexpr int INTERFACE_NO = 0x01;
 
 FadecandyDriver::FadecandyDriver()
 {
-  uint r = libusb_init(&context_);
+  int r = libusb_init(&context_);
   if (r < 0)
   {
     throw std::runtime_error("Could not start USB session.");
@@ -80,7 +80,7 @@ std::string FadecandyDriver::connect()
   }
 
   // Claim interface
-  uint r = 0;
+  int r = 0;
 
   r = libusb_claim_interface(dev_handle_, INTERFACE_NO);
   if (r < 0)
@@ -122,7 +122,7 @@ void FadecandyDriver::setColors(std::vector<std::vector<Color>> led_colors)
     throw std::runtime_error("Not connected");
   }
 
-  uint r = 0;
+  int r = 0;
   int actual_written;
   const int timeout = 10000;
 
@@ -142,7 +142,7 @@ libusb_device_descriptor FadecandyDriver::findUsbDevice()
 {
   libusb_device** list = nullptr;
   libusb_device_descriptor fadecandy_device_descriptor;
-  uint r = 0;
+  int r = 0;
   unsigned count = 0;
 
   count = libusb_get_device_list(context_, &list);
@@ -169,12 +169,12 @@ void FadecandyDriver::releaseInterface()
 {
   if (isConnected())
   {
-    uint r = 0;
+    int r = 0;
 
     r = libusb_release_interface(dev_handle_, INTERFACE_NO);
-    if (r < 0)
+    if (r < 0 && r != LIBUSB_ERROR_NO_DEVICE)
     {
-      throw std::runtime_error("Could not release device.");
+      throw std::runtime_error("Could not release device." + std::to_string(r));
     }
     libusb_close(dev_handle_);
     dev_handle_ = NULL;
