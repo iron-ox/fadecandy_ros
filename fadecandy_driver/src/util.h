@@ -3,7 +3,7 @@
 namespace fadecandy_driver
 {
 //!
-//! \brief The color struct contains the r,g and b colors
+//! \brief The color struct contains the r, g and b colors
 //!
 struct Color
 {
@@ -24,7 +24,7 @@ struct Color
 //! less than the total number of LEDs in any given strip, all unspecified
 //! LEDs are left dark.
 //!
-std::vector<std::vector<unsigned char>> makeVideoUsbPackets(const std::vector<std::vector<Color>>&);
+std::vector<std::vector<unsigned char>> makeVideoUsbPackets(const std::vector<std::vector<Color>>& led_array_colors);
 
 //!
 //! \brief makeLookupTablePackets Create USB packets for a simple color
@@ -40,5 +40,4 @@ std::vector<std::vector<unsigned char>> makeLookupTablePackets(const std::vector
 //! the blue channel.
 //!
 std::vector<int> makeDefaultLookupTable();
-
 }  // namespace fadecandy_driver

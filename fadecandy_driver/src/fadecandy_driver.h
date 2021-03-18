@@ -40,24 +40,14 @@
 
 namespace fadecandy_driver
 {
-//!
-//! \brief The FadecandyDriver class
-//!
 class FadecandyDriver
 {
 public:
-  //!
-  //! \brief FadecandyDriver fadecandy driver constructor
-  //!
   FadecandyDriver();
-
-  //!
-  //! \brief ~FadecandyDriver fadecandy driver destructor
-  //!
   ~FadecandyDriver();
 
   //!
-  //! \brief connect Initialize fadecandy device interface
+  //! \brief connect Initialize the Fadecandy device
   //! \return Serial number
   //!
   std::string connect();
@@ -75,12 +65,12 @@ public:
 
 private:
   //!
-  //! \brief context_
+  //! \brief context_ Lib USB Context
   //!
   libusb_context* context_ = NULL;
 
   //!
-  //! \brief dev_handle_ device handle
+  //! \brief dev_handle_ USB device handle
   //!
   libusb_device_handle* dev_handle_ = NULL;
 
@@ -95,5 +85,4 @@ private:
   //!
   void releaseInterface();
 };
-
 }  // namespace fadecandy_driver

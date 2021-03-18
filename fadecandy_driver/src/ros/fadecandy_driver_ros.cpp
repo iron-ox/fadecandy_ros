@@ -52,11 +52,11 @@ FadecandyDriverROS::FadecandyDriverROS(double restart_patience) : restart_patien
 
 void FadecandyDriverROS::run()
 {
-  constructConnection();
+  setupConnection();
   ros::spin();
 }
 
-void FadecandyDriverROS::constructConnection()
+void FadecandyDriverROS::setupConnection()
 {
   try
   {
@@ -122,8 +122,6 @@ void FadecandyDriverROS::connectTimerCallback(const ros::TimerEvent& e)
   {
     return;
   }
-
-  constructConnection();
+  setupConnection();
 }
-
 }  // namespace fadecandy_driver

@@ -41,9 +41,6 @@
 
 namespace fadecandy_driver
 {
-//!
-//! \brief The FadecandyDriverRos class wraps ROS
-//!
 class FadecandyDriverROS
 {
 public:
@@ -54,21 +51,25 @@ public:
   FadecandyDriverROS(double restart_patience);
 
   //!
-  //! \brief run Listen to LED messages and publishes the diagnostic of the driver
+  //! \brief run Listen to LED messages and publishes diagnostic of the driver
   //!
   void run();
 
-  //!
-  //! \brief constructConnection Constrcut a connection with fadecandy device
-  //!
-  void constructConnection();
-
 private:
+  //!
+  //! \brief driver_ Fadecandy driver
+  //!
   FadecandyDriver driver_;
 
   //!
-  //! \brief setLedsCallback Fired when a new LEDArray message is received
+  //! \brief setupConnection Connect the driver to the device
   //!
+  void setupConnection();
+
+  //!
+  //! \brief led_subscriber_ LED messages subscriber
+  //!
+  ros::Subscriber led_subscriber_;
   void setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr& msg);
 
   //!
@@ -95,14 +96,8 @@ private:
   diagnostic_updater::Updater diagnostic_updater_;
 
   //!
-  //! \brief led_subscriber_ LED messages subscriber
+  //! \brief restart_patience_ Restart patience time
   //!
-  ros::Subscriber led_subscriber_;
-
-  //!
-  //! \brief restart_patience_ restart patience time
-  //!
-  double restart_patience_ = 0;
+  double restart_patience_;
 };
-
 }  // namespace fadecandy_driver

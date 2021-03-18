@@ -235,5 +235,4 @@ std::vector<int> makeDefaultLookupTable()
   }
   return lookup_values;
 }
-
 }  // namespace fadecandy_driver
