@@ -44,21 +44,29 @@ constexpr int USB_VENDOR_ID = 0x1d50;
 constexpr int USB_ENDPOINT = 1;
 constexpr int INTERFACE_NO = 0x01;
 
+FadecandyDriver::FadecandyDriver()
+{
+  uint r = libusb_init(&context_);
+  if (r < 0)
+  {
+    throw std::runtime_error("Could not start USB session.");
+  }
+}
+
+FadecandyDriver::~FadecandyDriver()
+{
+  libusb_exit(context_);
+}
+
 std::string FadecandyDriver::connect()
 {
   // Find usb device.
   libusb_device_descriptor fadecandy_device_descriptor = findUsbDevice();
 
-  uint r = libusb_init(&context_);
-  if (r < 0)
-  {
-    throw std::runtime_error("Could not create USB session.");
-  }
   dev_handle_ = libusb_open_device_with_vid_pid(context_, USB_VENDOR_ID, USB_PRODUCT_ID);
 
   if (dev_handle_ == NULL)
   {
-    libusb_exit(context_);
     throw std::runtime_error("Could not open device.");
   }
 
@@ -67,16 +75,16 @@ std::string FadecandyDriver::connect()
   {
     if (libusb_detach_kernel_driver(dev_handle_, INTERFACE_NO) != 0)
     {
-      libusb_exit(context_);
       throw std::runtime_error("Could not detach kernel driver.");
     }
   }
 
   // Claim interface
+  uint r = 0;
+
   r = libusb_claim_interface(dev_handle_, INTERFACE_NO);
   if (r < 0)
   {
-    libusb_exit(context_);
     throw std::runtime_error("Could not claim device interface.");
   }
 
@@ -95,7 +103,6 @@ std::string FadecandyDriver::connect()
     r = libusb_bulk_transfer(dev_handle_, USB_ENDPOINT, packet.data(), USB_PACKET_SIZE, &actual_written, timeout);
     if (r != 0 && actual_written != USB_PACKET_SIZE)
     {
-      libusb_exit(context_);
       throw std::runtime_error("Failed to write data on device.");
     }
   }
@@ -115,16 +122,16 @@ void FadecandyDriver::setColors(std::vector<std::vector<Color>> led_colors)
     throw std::runtime_error("Not connected");
   }
 
-  uint r = libusb_init(&context_);
+  uint r = 0;
   int actual_written;
   const int timeout = 10000;
+
   std::vector<std::vector<unsigned char>> usb_packets = makeVideoUsbPackets(led_colors);
   for (auto& usb_packet : usb_packets)
   {
     r = libusb_bulk_transfer(dev_handle_, USB_ENDPOINT, usb_packet.data(), USB_PACKET_SIZE, &actual_written, timeout);
     if (r != 0 || actual_written != USB_PACKET_SIZE)
     {
-      libusb_exit(context_);
       releaseInterface();
       throw std::runtime_error("Could not write on the driver.");
     }
@@ -135,14 +142,9 @@ libusb_device_descriptor FadecandyDriver::findUsbDevice()
 {
   libusb_device** list = nullptr;
   libusb_device_descriptor fadecandy_device_descriptor;
-  int r = 0;
+  uint r = 0;
   unsigned count = 0;
 
-  r = libusb_init(&context_);
-  if (r < 0)
-  {
-    throw std::runtime_error("Could not create USB session.");
-  }
   count = libusb_get_device_list(context_, &list);
   for (size_t idx = 0; idx < count; ++idx)
   {
@@ -160,7 +162,6 @@ libusb_device_descriptor FadecandyDriver::findUsbDevice()
     }
   }
   libusb_free_device_list(list, count);
-  libusb_exit(context_);
   return fadecandy_device_descriptor;
 }
 
@@ -168,22 +169,14 @@ void FadecandyDriver::releaseInterface()
 {
   if (isConnected())
   {
-    uint r = libusb_init(&context_);
-
-    if (r < 0)
-    {
-      throw std::runtime_error("Could not create USB session.");
-    }
+    uint r = 0;
 
     r = libusb_release_interface(dev_handle_, INTERFACE_NO);
-
     if (r < 0)
     {
-      libusb_exit(context_);
       throw std::runtime_error("Could not release device.");
     }
     libusb_close(dev_handle_);
-    libusb_exit(context_);
     dev_handle_ = NULL;
   }
 }

@@ -143,7 +143,10 @@ std::vector<std::vector<unsigned char>> makeVideoUsbPackets(const std::vector<st
     // add control byte
     packet.insert(packet.begin(), static_cast<unsigned char>(control));
 
-    assert(packet.size() == USB_PACKET_SIZE);
+    if (packet.size() != USB_PACKET_SIZE)
+    {
+      throw std::runtime_error("Packet size does not match the allowed USB packet size");
+    }
     packets.push_back(packet);
   }
   return packets;
@@ -153,9 +156,11 @@ std::vector<std::vector<unsigned char>> makeLookupTablePackets(const std::vector
                                                                const std::vector<int>& green_lookup_values,
                                                                const std::vector<int>& blue_lookup_values)
 {
-  assert(red_lookup_values.size() == LOOKUP_VALUES_PER_CHANNEL);
-  assert(green_lookup_values.size() == LOOKUP_VALUES_PER_CHANNEL);
-  assert(blue_lookup_values.size() == LOOKUP_VALUES_PER_CHANNEL);
+  if (red_lookup_values.size() != LOOKUP_VALUES_PER_CHANNEL ||
+      green_lookup_values.size() != LOOKUP_VALUES_PER_CHANNEL || blue_lookup_values.size() != LOOKUP_VALUES_PER_CHANNEL)
+  {
+    throw std::runtime_error("Lookup values per channel is not correct");
+  }
   std::vector<std::vector<unsigned char>> packets;
   std::vector<int> remaining_lookup_values;
   std::vector<int> packet_lookup_values;
@@ -207,7 +212,10 @@ std::vector<std::vector<unsigned char>> makeLookupTablePackets(const std::vector
     packet.insert(packet.begin(), static_cast<unsigned char>(0));
     packet.insert(packet.begin(), static_cast<unsigned char>(control));
 
-    assert(packet.size() == USB_PACKET_SIZE);
+    if (packet.size() != USB_PACKET_SIZE)
+    {
+      throw std::runtime_error("Packet size does not match the allowed USB packet size");
+    }
     packets.push_back(packet);
   }
   return packets;

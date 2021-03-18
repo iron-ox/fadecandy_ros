@@ -47,6 +47,16 @@ class FadecandyDriver
 {
 public:
   //!
+  //! \brief FadecandyDriver fadecandy driver constructor
+  //!
+  FadecandyDriver();
+
+  //!
+  //! \brief ~FadecandyDriver fadecandy driver destructor
+  //!
+  ~FadecandyDriver();
+
+  //!
   //! \brief connect Initialize fadecandy device interface
   //! \return Serial number
   //!
