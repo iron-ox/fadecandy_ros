@@ -52,7 +52,7 @@ public:
   void setColors(std::vector<std::vector<Color>> led_colors);
 
   //!
-  //! \brief initialize Initialize fadecandy device interface and constrcut connection
+  //! \brief connect Initialize fadecandy device interface and constrcut connection
   //!
   std::string connect();
 

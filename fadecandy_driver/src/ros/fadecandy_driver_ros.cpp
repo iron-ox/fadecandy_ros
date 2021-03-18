@@ -52,7 +52,22 @@ FadecandyDriverROS::FadecandyDriverROS(double restart_patience) : restart_patien
 
 void FadecandyDriverROS::run()
 {
+  constructConnection();
   ros::spin();
+}
+
+void FadecandyDriverROS::constructConnection()
+{
+  try
+  {
+    auto serial_number = driver_.connect();
+    diagnostic_updater_.setHardwareID(serial_number);
+    ROS_INFO("Fadecandy device is connected.");
+  }
+  catch (const std::exception& e)
+  {
+    ROS_WARN_ONCE("Failed to connect to device: %s; will retry every %f seconds", e.what(), restart_patience_);
+  }
 }
 
 void FadecandyDriverROS::setLedsCallback(const fadecandy_msgs::LEDArrayConstPtr& led_array_msg)
@@ -108,16 +123,7 @@ void FadecandyDriverROS::connectTimerCallback(const ros::TimerEvent& e)
     return;
   }
 
-  try
-  {
-    auto serial_number = driver_.connect();
-    diagnostic_updater_.setHardwareID(serial_number);
-    ROS_INFO("Fadecandy device is connected.");
-  }
-  catch (const std::exception& e)
-  {
-    ROS_WARN_ONCE("Failed to connect to device: %s; will retry every %f seconds", e.what(), restart_patience_);
-  }
+  constructConnection();
 }
 
 }  // namespace fadecandy_driver

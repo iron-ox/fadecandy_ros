@@ -58,6 +58,11 @@ public:
   //!
   void run();
 
+  //!
+  //! \brief constructConnection Constrcut a connection with fadecandy device
+  //!
+  void constructConnection();
+
 private:
   FadecandyDriver driver_;
 
