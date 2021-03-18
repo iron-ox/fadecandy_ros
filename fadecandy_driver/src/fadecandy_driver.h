@@ -33,8 +33,8 @@
  */
 
 #include <libusb-1.0/libusb.h>
+#include <string>
 #include <vector>
-#include <iostream>
 
 #include "./util.h"
 
@@ -47,20 +47,21 @@ class FadecandyDriver
 {
 public:
   //!
-  //! \brief setColors Transfer the LED color stream to the driver
-  //!
-  void setColors(std::vector<std::vector<Color>> led_colors);
-
-  //!
-  //! \brief connect Initialize fadecandy device interface and constrcut connection
+  //! \brief connect Initialize fadecandy device interface
+  //! \return Serial number
   //!
   std::string connect();
 
   //!
   //! \brief isConnected
-  //! \return
+  //! \return True if connected, False otherwise
   //!
   bool isConnected();
+
+  //!
+  //! \brief setColors Transfer the LED color stream to the driver
+  //!
+  void setColors(std::vector<std::vector<Color>> led_colors);
 
 private:
   //!
