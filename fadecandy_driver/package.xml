@@ -14,4 +14,6 @@
   <depend>fadecandy_msgs</depend>
   <depend>libusb</depend>
   <depend>roscpp</depend>
+
+  <test_depend>rospy</test_depend>
 </package>
