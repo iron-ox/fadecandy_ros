@@ -33,13 +33,10 @@
  */
 
 #include <algorithm>
-#include <cassert>
-#include <cstring>
-#include <iomanip>
-#include <iostream>
 #include <libusb-1.0/libusb.h>
 #include <list>
 #include <math.h>
+#include <stdexcept>
 
 #include "./util.h"
 
