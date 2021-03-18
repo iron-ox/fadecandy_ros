@@ -174,7 +174,7 @@ void FadecandyDriver::releaseInterface()
     r = libusb_release_interface(dev_handle_, INTERFACE_NO);
     if (r < 0 && r != LIBUSB_ERROR_NO_DEVICE)
     {
-      throw std::runtime_error("Could not release device." + std::to_string(r));
+      throw std::runtime_error("Could not release device.");
     }
     libusb_close(dev_handle_);
     dev_handle_ = NULL;
