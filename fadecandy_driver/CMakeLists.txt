@@ -44,8 +44,8 @@ add_library(${PROJECT_NAME}_ros
 )
 target_link_libraries(${PROJECT_NAME}_ros ${PROJECT_NAME} )
 
-add_executable(${PROJECT_NAME}_node src/ros/${PROJECT_NAME}_ros_node.cpp)
-target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME}_ros)
+add_executable(fadecandy_node src/ros/${PROJECT_NAME}_ros_node.cpp)
+target_link_libraries(fadecandy_node ${PROJECT_NAME}_ros)
 
 #############
 ## Install ##
@@ -54,8 +54,8 @@ target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME}_ros)
 install(
   TARGETS
     ${PROJECT_NAME}
-    ${PROJECT_NAME}_node
     ${PROJECT_NAME}_ros
+    fadecandy_node
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
