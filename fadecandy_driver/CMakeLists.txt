@@ -14,10 +14,12 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
 )
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-find_package(libusb REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(libusb libusb-1.0)
 
 catkin_package(
+  DEPENDS
+    libusb
   CATKIN_DEPENDS
     diagnostic_updater
     fadecandy_msgs
@@ -30,14 +32,14 @@ catkin_package(
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  ${LIBUSB_INCLUDE_DIRS}
+  ${libusb_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME}
   src/${PROJECT_NAME}.cpp
   src/util.cpp
 )
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${LIBUSB_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${libusb_LIBRARIES})
 
 add_library(${PROJECT_NAME}_ros
   src/ros/${PROJECT_NAME}_ros.cpp
