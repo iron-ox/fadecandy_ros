@@ -2,6 +2,23 @@
 Changelog for package fadecandy_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Feat/refactor to c++ (`#20 <https://github.com/iron-ox/fadecandy_ros/issues/20>`_)
+  Co-authored-by: jad <jad.hajmustafa@eurogroep.com>
+  Co-authored-by: Rein Appeldoorn <reinzor@gmail.com>
+* Merge pull request `#17 <https://github.com/iron-ox/fadecandy_ros/issues/17>`_ from eurogroep/fix/handle-reconnections
+  fix: Handle reconnections properly
+* fix(diagnostics): Publish before first connect
+* Merge pull request `#15 <https://github.com/iron-ox/fadecandy_ros/issues/15>`_ from eurogroep/fix/remove-fadecandy-util-unused-file
+  fix: remove unused fadecandy_util.py
+* fix: Handle reconnections properly
+  Release the USB device and restart the driver when an IOError has been
+  raised while sending to the USB device. This way, we can recover from
+  unplugging and pluggin the USB device.
+* fix: remove unused fadecandy_util.py
+* Contributors: Catherine Wong, Jad Haj Mustafa, Rein Appeldoorn
+
 0.1.3 (2020-11-02)
 ------------------
 * Merge pull request `#13 <https://github.com/iron-ox/fadecandy_ros/issues/13>`_ from eurogroep/fix/noetic-python3-struct-pack: fix(Noetic/Python3): Struct packing

@@ -2,6 +2,9 @@
 Changelog for package fadecandy_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.1.3 (2020-11-02)
 ------------------
 
