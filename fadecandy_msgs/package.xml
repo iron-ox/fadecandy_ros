@@ -4,7 +4,8 @@
   <version>0.2.0</version>
   <description>ROS msgs for fadecandy LED controllers</description>
 
-  <maintainer email="jon.binney@ironox.com">Jon Binney</maintainer>
+  <maintainer email="reinzor@gmail.com">Rein Appeldoorn</maintainer>
+  <maintainer email="venkatavaradhan93@gmail.com">Venkatavaradhan Vembanoor Lakshmi Narayanan</maintainer>
 
   <license>Apache License 2.0</license>
 
