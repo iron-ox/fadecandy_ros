@@ -2,6 +2,11 @@
 Changelog for package fadecandy_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* chore(package.xml): Update maintainers
+* Contributors: Rein Appeldoorn
+
 0.2.0 (2021-04-19)
 ------------------
 * Feat/refactor to c++ (`#20 <https://github.com/iron-ox/fadecandy_ros/issues/20>`_)
