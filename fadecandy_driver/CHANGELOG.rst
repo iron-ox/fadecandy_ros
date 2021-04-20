@@ -2,8 +2,8 @@
 Changelog for package fadecandy_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.1 (2021-04-20)
+------------------
 * chore(package.xml): Update maintainers
 * Contributors: Rein Appeldoorn
 
