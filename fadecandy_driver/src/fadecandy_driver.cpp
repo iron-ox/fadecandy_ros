@@ -42,7 +42,7 @@ constexpr int USB_PACKET_SIZE = 64;
 constexpr int USB_PRODUCT_ID = 0x607a;
 constexpr int USB_VENDOR_ID = 0x1d50;
 constexpr int USB_ENDPOINT = 1;
-constexpr int INTERFACE_NO = 0x01;
+constexpr int INTERFACE_NO = 0x00;
 
 FadecandyDriver::FadecandyDriver()
 {
