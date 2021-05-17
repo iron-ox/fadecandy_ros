@@ -2,8 +2,8 @@
 Changelog for package fadecandy_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.2 (2021-05-17)
+------------------
 * fix: usb interface number (`#24 <https://github.com/iron-ox/fadecandy_ros/issues/24>`_)
 * Contributors: Jad Haj Mustafa
 
